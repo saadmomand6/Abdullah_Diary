@@ -19,14 +19,16 @@ class CustomerController extends GetxController {
 
   void addBankAccount() {
     bankAccounts.add({
-      'accountName': TextEditingController(),
+      'accountTitle': TextEditingController(),
       'accountNumber': TextEditingController(),
+      'bankName': TextEditingController(),
     });
   }
 
   void removeBankAccount(int index) {
-    bankAccounts[index]['accountName']!.dispose();
+    bankAccounts[index]['accountTitle']!.dispose();
     bankAccounts[index]['accountNumber']!.dispose();
+    bankAccounts[index]['bankName']!.dispose();
     bankAccounts.removeAt(index);
   }
 
@@ -38,8 +40,9 @@ class CustomerController extends GetxController {
       'address': addressController.text,
       'bankAccounts': bankAccounts
           .map((account) => {
-                'accountName': account['accountName']!.text,
+                'accountTitle': account['accountTitle']!.text,
                 'accountNumber': account['accountNumber']!.text,
+                'bankName': account['bankName']!.text,
               })
           .toList()
     };
@@ -63,8 +66,9 @@ class CustomerController extends GetxController {
     contactController.dispose();
     addressController.dispose();
     for (var account in bankAccounts) {
-      account['accountName']!.dispose();
+      account['accountTitle']!.dispose();
       account['accountNumber']!.dispose();
+      account['bankName']!.dispose();
     }
     super.onClose();
   }

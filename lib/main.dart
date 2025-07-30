@@ -14,11 +14,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'ABD Diary',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: SplashScreen(),
     );
   }
+}
+import 'package:flutter/material.dart';
+import 'views/add_customer.dart';
+
+void main() {
+  runApp(MyApp());
 }

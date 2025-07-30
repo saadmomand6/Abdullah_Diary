@@ -47,8 +47,16 @@ class EditCustomerScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: Text("Edit Customer (کسٹمر میں ترمیم کریں)")),
+      backgroundColor: Colors.white,
+      title: Text("Edit Customer (کسٹمر میں ترمیم کریں)",
+        style: TextStyle(
+        fontSize: 18, // 👈 Change this to your desired size
+        fontWeight: FontWeight.bold, // Optional
+        color: Colors.black,         // Optional if you want dark text
+        ),
+      ),
+    ),
+      
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -117,16 +125,16 @@ class EditCustomerScreen extends StatelessWidget {
                       return Column(
                         children: [
                           TextFormField(
-                            controller: account['accountName'],
+                            controller: account['accountTitle'],
                             textAlign: TextAlign.center,
                             textDirection: _getDirection(
-                                account['accountName']!.text),
+                                account['accountTitle']!.text),
                             onChanged: (val) =>
-                                account['accountName']!.text = val,
+                                account['accountTitle']!.text = val,
                             decoration: _inputDecoration(
-                                "Account Name #${index + 1} (اکاؤنٹ کا نام)"),
+                                "Account Title #${index + 1} (اکاؤنٹ کا نام)"),
                             validator: (value) => value!.isEmpty
-                                ? "Enter account name"
+                                ? "Enter account title"
                                 : null,
                           ),
                           SizedBox(height: 10),
@@ -142,6 +150,21 @@ class EditCustomerScreen extends StatelessWidget {
                             keyboardType: TextInputType.number,
                             validator: (value) => value!.isEmpty
                                 ? "Enter account number"
+                                : null,
+                          ),
+                          SizedBox(height: 10),
+                          TextFormField(
+                            controller: account['bankName'],
+                            textAlign: TextAlign.center,
+                            textDirection: _getDirection(
+                                account['bankName']!.text),
+                            onChanged: (val) =>
+                                account['bankName']!.text = val,
+                            decoration: _inputDecoration(
+                                "Bank Name #${index + 1} (بینک کا نام)"),
+                            keyboardType: TextInputType.number,
+                            validator: (value) => value!.isEmpty
+                                ? "Enter bank name"
                                 : null,
                           ),
                           SizedBox(height: 10),
@@ -179,7 +202,7 @@ class EditCustomerScreen extends StatelessWidget {
                                 Icon(Icons.add),
                                 SizedBox(width: 8),
                                 Text(
-                                    "Add Another Bank Account (نیا اکاؤنٹ شامل کریں)")
+                                    "Add Bank Account (نیا اکاؤنٹ شامل کریں)")
                               ],
                             ),
                           ),
