@@ -1,6 +1,6 @@
+import 'package:abdullah_diary/models/customer_card_models.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import '../model/customer_model.dart';
 
 class DBHelper {
   static Database? _db;
@@ -52,4 +52,15 @@ class DBHelper {
 
     return customerId;
   }
+
+  static Future<List<Customer>> getAllCustomers() async {
+  final db = await database;
+
+  final List<Map<String, dynamic>> maps = await db.query('customers');
+
+  return List.generate(maps.length, (i) {
+    return Customer.fromMap(maps[i]);
+  });
+}
+
 }

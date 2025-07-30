@@ -1,7 +1,6 @@
+import 'package:abdullah_diary/db/db_helper.dart';
+import 'package:abdullah_diary/models/customer_card_models.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../db/db_helper.dart';
-import '../model/customer_model.dart';
 
 class AddCustomerPage extends StatefulWidget {
   @override

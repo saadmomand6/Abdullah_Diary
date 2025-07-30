@@ -30,4 +30,13 @@ class Customer {
         'contact': contact,
         'address': address,
       };
+
+  factory Customer.fromMap(Map<String, dynamic> map) {
+    return Customer(
+      id: map['id'],
+      name: map['name'],
+      contact: map['contact'],
+      address: map['address'],
+    );
+  }
 }

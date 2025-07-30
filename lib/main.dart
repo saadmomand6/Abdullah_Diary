@@ -22,9 +22,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-import 'package:flutter/material.dart';
-import 'views/add_customer.dart';
-
-void main() {
-  runApp(MyApp());
-}

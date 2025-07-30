@@ -1,7 +1,9 @@
+import 'package:abdullah_diary/db/db_helper.dart';
 import 'package:abdullah_diary/models/customer_card_models.dart';
 import 'package:abdullah_diary/views/add_customer/add_customers.dart';
 import 'package:abdullah_diary/widgets/customer_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -21,10 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
       actions: [
         InkWell(
           onTap: (){
-             Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => AddCustomerScreen()));
+            Get.to(AddCustomerPage());
           },
           child: Container(
             decoration: BoxDecoration(
@@ -99,33 +98,73 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-           Expanded(
-            child: ListView.builder(
-              itemCount: CustomerHelper.itemCount,
-              itemBuilder: (context, index) {
-                CustomerItemModel customer =
-                    CustomerHelper.getchatitem(index);
-                String name = customer.name;
-                if (searchedtext.text.isEmpty) {
-                  return CustomerrCard(
-                    name: customer.name,
-                    address: customer.adrress,
-                    contact: customer.contactNumber,
-                  );
-                } else if (name
-                    .toLowerCase()
-                    .contains(searchedtext.text.toLowerCase())) {
-                  return CustomerrCard(
-                    name: customer.name,
-                    address: customer.adrress,
-                    contact: customer.contactNumber,
-                  );
-                } else {
-                  return const Center();
-                }
-              },
-            ),
-          ),
+            Expanded(
+  child: FutureBuilder<List<Customer>>(
+    future: DBHelper.getAllCustomers(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      if (snapshot.hasError) {
+        return Center(child: Text('Error: ${snapshot.error}'));
+      }
+
+      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        return const Center(child: Text('No Customers Found'));
+      }
+
+      final customers = snapshot.data!;
+
+      return ListView.builder(
+        itemCount: customers.length,
+        itemBuilder: (context, index) {
+          final customer = customers[index];
+          final name = customer.name;
+
+          if (searchedtext.text.isEmpty ||
+              name.toLowerCase().contains(searchedtext.text.toLowerCase())) {
+            return CustomerrCard(
+              name: customer.name,
+              address: customer.address,
+              contact: customer.contact,
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        },
+      );
+    },
+  ),
+)
+
+          //  Expanded(
+          //   child: ListView.builder(
+          //     itemCount: CustomerHelper.itemCount,
+          //     itemBuilder: (context, index) {
+          //       Customer customer =
+          //           CustomerHelper.getchatitem(index);
+          //       String name = customer.name;
+          //       if (searchedtext.text.isEmpty) {
+          //         return CustomerrCard(
+          //           name: customer.name,
+          //           address: customer.address,
+          //           contact: customer.contact,
+          //         );
+          //       } else if (name
+          //           .toLowerCase()
+          //           .contains(searchedtext.text.toLowerCase())) {
+          //         return CustomerrCard(
+          //           name: customer.name,
+          //           address: customer.address,
+          //           contact: customer.contact,
+          //         );
+          //       } else {
+          //         return const Center();
+          //       }
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );
