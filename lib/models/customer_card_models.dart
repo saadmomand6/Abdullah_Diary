@@ -1,42 +1,66 @@
 class BankAccount {
-  final String accountTitle;
-  final String accountNumber;
-  final String bankName;
+  int? id;
+  String title;
+  String number;
+  String bankName;
 
   BankAccount({
-    required this.accountTitle,
-    required this.accountNumber,
+    this.id,
+    required this.title,
+    required this.number,
     required this.bankName,
   });
 
-  Map<String, dynamic> toMap(int customerId) => {
-        'customer_id': customerId,
-        'account_title': accountTitle,
-        'account_number': accountNumber,
-        'bank_name': bankName,
-      };
+  Map<String, dynamic> toMap(int customerId) {
+    return {
+      'id': id,
+      'customer_id': customerId,
+      'title': title,
+      'number': number,
+      'bank_name': bankName,
+    };
+  }
+
+  factory BankAccount.fromMap(Map<String, dynamic> map) {
+    return BankAccount(
+      id: map['id'],
+      title: map['title'],
+      number: map['number'],
+      bankName: map['bank_name'],
+    );
+  }
 }
 
-class Customer {
-  final int? id;
-  final String name;
-  final String contact;
-  final String address;
+class CustomerItemModel {
+  int? id;
+  String name;
+  String contactNumber;
+  String adrress;
+  List<BankAccount> accounts;
 
-  Customer({this.id, required this.name, required this.contact, required this.address});
+  CustomerItemModel({
+    this.id,
+    required this.name,
+    required this.contactNumber,
+    required this.adrress,
+    this.accounts = const [],
+  });
 
-  Map<String, dynamic> toMap() => {
-        'name': name,
-        'contact': contact,
-        'address': address,
-      };
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'contact': contactNumber,
+      'address': adrress,
+    };
+  }
 
-  factory Customer.fromMap(Map<String, dynamic> map) {
-    return Customer(
+  factory CustomerItemModel.fromMap(Map<String, dynamic> map) {
+    return CustomerItemModel(
       id: map['id'],
       name: map['name'],
-      contact: map['contact'],
-      address: map['address'],
+      contactNumber: map['contact'],
+      adrress: map['address'],
     );
   }
 }
