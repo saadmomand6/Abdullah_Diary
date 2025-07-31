@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:abdullah_diary/db/db_helper.dart';
 import 'package:abdullah_diary/views/edit_customer.dart/edit_customer.dart';
+import 'package:share_plus/share_plus.dart';
 
 class CustomerInfoScreen extends StatefulWidget {
   final int id;
@@ -101,47 +102,85 @@ print("ALL ACCOUNTS IN DB: $allAccounts");
               ),
               const SizedBox(height: 10),
               isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : bankAccounts.isEmpty
-                      ? const Text(
-                          "No Bank Accounts Added (کوئی بینک اکاؤنٹس نہیں)",
-                          style: TextStyle(color: Colors.grey),
-                        )
-                      : Column(
-                          children: bankAccounts.asMap().entries.map((entry) {
-                            int index = entry.key;
-                            var account = entry.value;
+    ? const Center(child: CircularProgressIndicator())
+    : bankAccounts.isEmpty
+        ? const Text(
+            "No Bank Accounts Added (کوئی بینک اکاؤنٹس نہیں)",
+            style: TextStyle(color: Colors.grey),
+          )
+        :Table(
+  border: TableBorder.all(color: Colors.grey.shade300),
+  columnWidths: const {
+    0: FlexColumnWidth(2),
+    1: FlexColumnWidth(2),
+    2: FlexColumnWidth(2),
+    3: IntrinsicColumnWidth(),
+  },
+  children: [
+    // Header Row
+    const TableRow(
+      decoration: BoxDecoration(color: Color(0xFFE0E0E0)),
+      children: [
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Account Title', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Account Number', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Bank Name', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Share', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+      ],
+    ),
+    // Data Rows
+    ...bankAccounts.map((account) {
+      final title = account['title'] ?? '';
+      final number = account['number'] ?? '';
+      final bankName = account['bank_name'] ?? '';
 
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 12),
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(8),
-                                color: Colors.grey.shade50,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _buildInfoItem(
-                                    "Account Title #${index + 1} (اکاؤنٹ کا نام)",
-                                    account['title'] ?? '',
-                                  ),
-                                  const SizedBox(height: 8),
-                                  _buildInfoItem(
-                                    "Account Number (اکاؤنٹ نمبر)",
-                                    account['number'] ?? '',
-                                  ),
-                                  const SizedBox(height: 8),
-                                  _buildInfoItem(
-                                    "Bank Name (بینک کا نام)",
-                                    account['bank_name'] ?? '',
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                        ),
+      return TableRow(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(title),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(number),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(bankName),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: IconButton(
+              icon: const Icon(Icons.share, size: 20, color: Colors.green),
+              onPressed: () {
+                final message = '''
+📋 *Bank Account Details*
+
+🏦 *Title:* $title
+🔢 *Number:* $number
+🏛️ *Bank:* $bankName
+''';
+                Share.share(message);
+              },
+            ),
+          ),
+        ],
+      );
+    }).toList(),
+  ],
+),
+
             ],
           ),
         ),
