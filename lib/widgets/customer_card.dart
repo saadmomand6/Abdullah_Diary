@@ -2,25 +2,20 @@ import 'package:abdullah_diary/views/info_screen/info_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CustomerrCard extends StatefulWidget {
+class CustomerCard extends StatelessWidget {
+  final int id;
   final String name;
-  final String? id;
   final String? contact;
   final String? address;
 
-  const CustomerrCard({
-    required this.name,
-    this.id,
-    this.address,
-    this.contact,
+  const CustomerCard({
     super.key,
+    required this.id,
+    required this.name,
+    this.contact,
+    this.address,
   });
 
-  @override
-  State<CustomerrCard> createState() => _CustomerrCardState();
-}
-
-class _CustomerrCardState extends State<CustomerrCard> {
   /// Helper method: Detect if text is Urdu
   bool _isUrdu(String text) {
     final urduRegex = RegExp(r'[\u0600-\u06FF]');
@@ -29,17 +24,15 @@ class _CustomerrCardState extends State<CustomerrCard> {
 
   @override
   Widget build(BuildContext context) {
-    bool isUrdu = _isUrdu(widget.name);
+    bool isUrdu = _isUrdu(name);
 
     return InkWell(
       onTap: () {
-        // Navigate to Customer Info Screen on card tap
         Get.to(() => CustomerInfoScreen(
-              id: widget.id ?? '',
-              name: widget.name,
-              contact: widget.contact ?? '',
-              address: widget.address ?? '',
-              //bankAccounts: const [], // Pass bank accounts list here if available
+              id: id,
+              name: name,
+              contact: contact ?? '',
+              address: address ?? '',
             ));
       },
       child: Padding(
@@ -66,15 +59,13 @@ class _CustomerrCardState extends State<CustomerrCard> {
                 mainAxisAlignment:
                     isUrdu ? MainAxisAlignment.start : MainAxisAlignment.end,
                 children: [
-                  // If Urdu -> view icon first, then text
                   if (isUrdu)
                     const Icon(Icons.remove_red_eye, color: Colors.black),
                   if (isUrdu) const SizedBox(width: 8),
 
-                  // Name text
                   Expanded(
                     child: Text(
-                      widget.name,
+                      name,
                       textAlign: isUrdu ? TextAlign.right : TextAlign.left,
                       style: TextStyle(
                         color: Colors.black,
@@ -83,27 +74,22 @@ class _CustomerrCardState extends State<CustomerrCard> {
                     ),
                   ),
 
-                  // If English -> text first, then view icon
                   if (!isUrdu) const SizedBox(width: 8),
                   if (!isUrdu)
                     const Icon(Icons.remove_red_eye, color: Colors.black),
                 ],
               ),
               const SizedBox(height: 5),
-
-              // Contact
               Text(
-                widget.contact.toString(),
+                contact ?? '',
                 textAlign: isUrdu ? TextAlign.right : TextAlign.left,
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: MediaQuery.of(context).size.height * 0.015,
                 ),
               ),
-
-              // Address
               Text(
-                widget.address.toString(),
+                address ?? '',
                 textAlign: isUrdu ? TextAlign.right : TextAlign.left,
                 style: TextStyle(
                   color: Colors.black,
@@ -117,5 +103,3 @@ class _CustomerrCardState extends State<CustomerrCard> {
     );
   }
 }
-
-

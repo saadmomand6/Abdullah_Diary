@@ -133,7 +133,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: filtered.length,
                   itemBuilder: (context, index) {
                     final customer = filtered[index];
-                    return CustomerrCard(
+                    return CustomerCard(
+                      id: customer.id!, // ✅ pass ID
                       name: customer.name,
                       address: customer.adrress,
                       contact: customer.contactNumber,

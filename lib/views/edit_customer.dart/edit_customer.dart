@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class EditCustomerScreen extends StatelessWidget {
+  final int id; // ✅ Updated from String to int
   final String name;
   final String contact;
   final String address;
-  final String id;
 
   final CustomerController controller = Get.put(CustomerController());
 
@@ -14,10 +14,10 @@ class EditCustomerScreen extends StatelessWidget {
 
   EditCustomerScreen({
     super.key,
+    required this.id,        // ✅ Updated type
     required this.name,
     required this.contact,
     required this.address,
-    required this.id,
   }) {
     // Pre-fill controllers with the passed data
     controller.nameController.text = name;
@@ -36,7 +36,6 @@ class EditCustomerScreen extends StatelessWidget {
     );
   }
 
-  /// Helper function to detect Urdu characters and set text direction dynamically
   TextDirection _getDirection(String text) {
     final urduRegex = RegExp(r'[\u0600-\u06FF]');
     return urduRegex.hasMatch(text) ? TextDirection.rtl : TextDirection.ltr;
@@ -47,16 +46,16 @@ class EditCustomerScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-      backgroundColor: Colors.yellow,
-      title: Text("Edit Customer (کسٹمر میں ترمیم کریں)",
-        style: TextStyle(
-        fontSize: 16, // 👈 Change this to your desired size
-        fontWeight: FontWeight.bold, // Optional
-        color: Colors.black,         // Optional if you want dark text
+        backgroundColor: Colors.yellow,
+        title: Text(
+          "Edit Customer (کسٹمر میں ترمیم کریں)",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
       ),
-    ),
-      
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -118,7 +117,7 @@ class EditCustomerScreen extends StatelessWidget {
                     SizedBox(height: 10),
 
                     // Dynamic Bank Accounts
-                    ...controller.bankAccounts.asMap().entries.map((entry) {
+                    ...controller.accounts.asMap().entries.map((entry) {
                       int index = entry.key;
                       var account = entry.value;
 
@@ -156,21 +155,19 @@ class EditCustomerScreen extends StatelessWidget {
                           TextFormField(
                             controller: account['bankName'],
                             textAlign: TextAlign.center,
-                            textDirection: _getDirection(
-                                account['bankName']!.text),
+                            textDirection:
+                                _getDirection(account['bankName']!.text),
                             onChanged: (val) =>
                                 account['bankName']!.text = val,
                             decoration: _inputDecoration(
                                 "Bank Name #${index + 1} (بینک کا نام)"),
-                            keyboardType: TextInputType.number,
-                            validator: (value) => value!.isEmpty
-                                ? "Enter bank name"
-                                : null,
+                            validator: (value) =>
+                                value!.isEmpty ? "Enter bank name" : null,
                           ),
                           SizedBox(height: 10),
 
                           // Remove account button
-                          if (controller.bankAccounts.length > 1)
+                          if (controller.accounts.length > 1)
                             Align(
                               alignment: Alignment.centerRight,
                               child: TextButton.icon(
@@ -186,34 +183,35 @@ class EditCustomerScreen extends StatelessWidget {
                       );
                     }),
 
-                    // Add another bank account (Right aligned)
+                    // Add another bank account
                     Align(
-                        alignment: Alignment.centerRight,
-                        child: InkWell(
-                          onTap: controller.addBankAccount,
-                          child: Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                                color: Colors.yellow,
-                                borderRadius: BorderRadius.circular(20)),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.add),
-                                SizedBox(width: 8),
-                                Text("Add Another Account (نیا اکاؤنٹ شامل کریں)"),
-                              ],
-                            ),
+                      alignment: Alignment.centerRight,
+                      child: InkWell(
+                        onTap: controller.addBankAccount,
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                              color: Colors.yellow,
+                              borderRadius: BorderRadius.circular(20)),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.add),
+                              SizedBox(width: 8),
+                              Text("Add Another Account (نیا اکاؤنٹ شامل کریں)"),
+                            ],
                           ),
-                        )),
-                    SizedBox(height: 80), // space before save button
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 80), // bottom spacing
                   ],
                 ),
               )),
         ),
       ),
 
-      // Full-width Yellow Save Button at bottom
+      // Bottom Save Button
       bottomNavigationBar: SizedBox(
         width: double.infinity,
         height: 60,
@@ -225,7 +223,7 @@ class EditCustomerScreen extends StatelessWidget {
           ),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              controller.updateCustomer(id); // Update existing customer
+              controller.updateCustomer(id); // ✅ Uses int ID
             }
           },
           child: Text(

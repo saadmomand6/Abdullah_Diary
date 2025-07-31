@@ -4,7 +4,7 @@ import 'package:abdullah_diary/db/db_helper.dart';
 import 'package:abdullah_diary/views/edit_customer.dart/edit_customer.dart';
 
 class CustomerInfoScreen extends StatefulWidget {
-  final String id;
+  final int id;
   final String name;
   final String contact;
   final String address;
@@ -32,18 +32,24 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
   }
 
   Future<void> fetchBankAccounts() async {
-    final db = await DBHelper.database();
-    final accounts = await db.query(
-      'bank_accounts',
-      where: 'customer_id = ?',
-      whereArgs: [int.tryParse(widget.id) ?? 0],
-    );
+  final db = await DBHelper.database();
 
-    setState(() {
-      bankAccounts = accounts;
-      isLoading = false;
-    });
-  }
+  final accounts = await db.query(
+    'bank_accounts',
+    where: 'customer_id = ?',
+    whereArgs: [widget.id], // ← fixed here
+  );
+
+  final allAccounts = await db.query('bank_accounts');
+print("ALL ACCOUNTS IN DB: $allAccounts");
+
+  print("Fetched accounts for ${widget.id}: $accounts");
+
+  setState(() {
+    bankAccounts = accounts;
+    isLoading = false;
+  });
+}
 
   TextDirection _getDirection(String text) {
     final urduRegex = RegExp(r'[\u0600-\u06FF]');

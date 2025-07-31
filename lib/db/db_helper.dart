@@ -23,85 +23,99 @@ class DBHelper {
   }
 
   static Future<void> _onCreate(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE customers (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        contact TEXT,
-        address TEXT
-      )
-    ''');
+  await db.execute('''
+    CREATE TABLE customers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT,
+      contact TEXT,           -- ✅ fixed from contactNumber
+      address TEXT            -- ✅ fixed from adrress
+    )
+  ''');
 
-    await db.execute('''
-      CREATE TABLE bank_accounts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        customer_id INTEGER,
-        title TEXT,
-        number TEXT,
-        bank_name TEXT,
-        FOREIGN KEY (customer_id) REFERENCES customers (id) ON DELETE CASCADE
-      )
-    ''');
-  }
+  await db.execute('''
+    CREATE TABLE bank_accounts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      customer_id INTEGER,
+      title TEXT,
+      number TEXT,
+      bank_name TEXT
+    )
+  ''');
+}
 
-  // Insert Customer with Accounts
   static Future<void> insertCustomer(CustomerItemModel customer) async {
-    final db = await database();
+  final db = await database();
 
-    int customerId = await db.insert('customers', customer.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+  // Insert customer
+  int customerId = await db.insert(
+    'customers',
+    customer.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
 
-    for (var account in customer.accounts) {
-      await db.insert('bank_accounts', account.toMap(customerId));
-    }
+  // Insert bank accounts for that customer
+  for (final account in customer.accounts) {
+    await insertBankAccount(account, customerId); // ← ✅ insert them now
   }
 
-  // Get all Customers with Accounts
+  print("Inserted customer with ID $customerId and ${customer.accounts.length} accounts");
+}
+
   static Future<List<CustomerItemModel>> getAllCustomers() async {
     final db = await database();
-
-    final customerMaps = await db.query('customers');
+    final customersData = await db.query('customers');
 
     List<CustomerItemModel> customers = [];
 
-    for (var customerMap in customerMaps) {
+    for (var customerMap in customersData) {
       final customer = CustomerItemModel.fromMap(customerMap);
-
-      final accounts = await db.query(
-        'bank_accounts',
-        where: 'customer_id = ?',
-        whereArgs: [customer.id],
-      );
-
-      customer.accounts =
-          accounts.map((accMap) => BankAccount.fromMap(accMap)).toList();
-
+      final accounts = await getBankAccountsForCustomer(customer.id!);
+      customer.accounts = accounts;
       customers.add(customer);
     }
 
     return customers;
   }
 
-  // Delete customer
+  static Future<void> updateCustomer(CustomerItemModel customer) async {
+    final db = await database();
+    await db.update(
+      'customers',
+      customer.toMap(),
+      where: 'id = ?',
+      whereArgs: [customer.id],
+    );
+  }
+
   static Future<void> deleteCustomer(int id) async {
     final db = await database();
     await db.delete('customers', where: 'id = ?', whereArgs: [id]);
+    await db.delete('bank_accounts', where: 'customer_id = ?', whereArgs: [id]);
   }
 
-  // Update customer
-  static Future<void> updateCustomer(CustomerItemModel customer) async {
+  static Future<void> insertBankAccount(BankAccount account, int customerId) async {
     final db = await database();
+    await db.insert('bank_accounts', {
+      'customer_id': customerId,
+      'title': account.title,
+      'number': account.number,
+      'bank_name': account.bankName,
+    });
+  }
 
-    await db.update('customers', customer.toMap(),
-        where: 'id = ?', whereArgs: [customer.id]);
+  static Future<List<BankAccount>> getBankAccountsForCustomer(int customerId) async {
+    final db = await database();
+    final maps = await db.query(
+      'bank_accounts',
+      where: 'customer_id = ?',
+      whereArgs: [customerId],
+    );
 
-    // Delete old accounts
-    await db.delete('bank_accounts',
-        where: 'customer_id = ?', whereArgs: [customer.id]);
+    return maps.map((m) => BankAccount.fromMap(m)).toList();
+  }
 
-    // Insert updated accounts
-    for (var account in customer.accounts) {
-      await db.insert('bank_accounts', account.toMap(customer.id!));
-    }
+  static Future<void> deleteBankAccountsByCustomerId(int customerId) async {
+    final db = await database();
+    await db.delete('bank_accounts', where: 'customer_id = ?', whereArgs: [customerId]);
   }
 }

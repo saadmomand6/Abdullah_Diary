@@ -1,24 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../db/db_helper.dart';
+import '../../models/customer_card_models.dart';
 
 class CustomerController extends GetxController {
-  // Customer info controllers
   final nameController = TextEditingController();
   final contactController = TextEditingController();
   final addressController = TextEditingController();
 
-  // Dynamic bank accounts
-  var bankAccounts = <Map<String, TextEditingController>>[].obs;
+  var accounts = <Map<String, TextEditingController>>[].obs;
+
+  int? customerId;
 
   @override
   void onInit() {
     super.onInit();
-    // Add initial bank account
-    addBankAccount();
+    addBankAccount(); // Always have at least one entry
+  }
+
+  void setCustomerData(CustomerItemModel customer) async {
+    customerId = customer.id;
+    nameController.text = customer.name;
+    contactController.text = customer.contactNumber;
+    addressController.text = customer.adrress;
+
+    accounts.clear();
+
+    List<BankAccount> existingAccounts =
+        await DBHelper.getBankAccountsForCustomer(customer.id!);
+    for (var acc in existingAccounts) {
+      accounts.add({
+        'accountTitle': TextEditingController(text: acc.title),
+        'accountNumber': TextEditingController(text: acc.number),
+        'bankName': TextEditingController(text: acc.bankName),
+      });
+    }
+
+    if (accounts.isEmpty) addBankAccount();
   }
 
   void addBankAccount() {
-    bankAccounts.add({
+    accounts.add({
       'accountTitle': TextEditingController(),
       'accountNumber': TextEditingController(),
       'bankName': TextEditingController(),
@@ -26,49 +48,46 @@ class CustomerController extends GetxController {
   }
 
   void removeBankAccount(int index) {
-    bankAccounts[index]['accountTitle']!.dispose();
-    bankAccounts[index]['accountNumber']!.dispose();
-    bankAccounts[index]['bankName']!.dispose();
-    bankAccounts.removeAt(index);
+    accounts[index]['accountTitle']?.dispose();
+    accounts[index]['accountNumber']?.dispose();
+    accounts[index]['bankName']?.dispose();
+    accounts.removeAt(index);
   }
 
-  void saveCustomer() {
-    // Collect data
-    final customer = {
-      'name': nameController.text,
-      'contact': contactController.text,
-      'address': addressController.text,
-      'bankAccounts': bankAccounts
-          .map((account) => {
-                'accountTitle': account['accountTitle']!.text,
-                'accountNumber': account['accountNumber']!.text,
-                'bankName': account['bankName']!.text,
-              })
-          .toList()
-    };
+  void updateCustomer(int id) async {
+    final updatedCustomer = CustomerItemModel(
+      id: id,
+      name: nameController.text,
+      contactNumber: contactController.text,
+      adrress: addressController.text,
+    );
 
-    
+    await DBHelper.updateCustomer(updatedCustomer);
+    await DBHelper.deleteBankAccountsByCustomerId(id);
 
-    Get.snackbar("Success", "Customer Saved Successfully!",
+    for (var account in accounts) {
+      final bankAccount = BankAccount(
+        title: account['accountTitle']!.text,
+        number: account['accountNumber']!.text,
+        bankName: account['bankName']!.text,
+      );
+      await DBHelper.insertBankAccount(bankAccount, id);
+    }
+
+    Get.snackbar("Success", "Customer updated successfully!",
         snackPosition: SnackPosition.BOTTOM);
+    Get.back();
   }
-
-  void updateCustomer(String id) {
-  // Update logic
-  // e.g., find customer by id in database or list and update values
-  Get.snackbar("Updated", "Customer updated successfully");
-  Get.back(); // Go back after saving
-}
 
   @override
   void onClose() {
     nameController.dispose();
     contactController.dispose();
     addressController.dispose();
-    for (var account in bankAccounts) {
-      account['accountTitle']!.dispose();
-      account['accountNumber']!.dispose();
-      account['bankName']!.dispose();
+    for (var account in accounts) {
+      account['accountTitle']?.dispose();
+      account['accountNumber']?.dispose();
+      account['bankName']?.dispose();
     }
     super.onClose();
   }
