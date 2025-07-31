@@ -47,7 +47,7 @@ class EditCustomerScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.yellow,
       title: Text("Edit Customer (کسٹمر میں ترمیم کریں)",
         style: TextStyle(
         fontSize: 16, // 👈 Change this to your desired size
@@ -201,8 +201,7 @@ class EditCustomerScreen extends StatelessWidget {
                               children: [
                                 Icon(Icons.add),
                                 SizedBox(width: 8),
-                                Text(
-                                    "Add Bank Account (نیا اکاؤنٹ شامل کریں)")
+                                Text("Add Another Account (نیا اکاؤنٹ شامل کریں)"),
                               ],
                             ),
                           ),

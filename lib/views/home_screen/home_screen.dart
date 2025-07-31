@@ -31,9 +31,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Abdullah Diary",
-          style: TextStyle(color: Colors.black),
-        ),
+  "Abdullah Diary (عبداللہ ڈائری)",
+  style: TextStyle(color: Colors.black),
+),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.yellow,
         actions: [
@@ -79,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 cursorColor: Colors.yellow,
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
-                  hintText: "Search Customers",
+                  hintText: "Search Customers (کسٹمرز تلاش کریں)",
                   contentPadding:
                       const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
                   hintStyle: const TextStyle(color: Colors.black),

@@ -75,7 +75,7 @@ class _AddCustomerPageState extends State<AddCustomerScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.yellow,
         title: const Text(
           "Add Customer (کسٹمر شامل کریں)",
           style: TextStyle(fontSize: 16, color: Colors.black),
@@ -86,13 +86,16 @@ class _AddCustomerPageState extends State<AddCustomerScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _buildTextField(nameController, "Customer Name"),
+            _buildTextField(nameController, "Customer Name (کسٹمر کا نام)"),
             const SizedBox(height: 10),
-            _buildTextField(contactController, "Contact Number"),
+            _buildTextField(contactController, "Contact Number (رابطہ نمبر)"),
             const SizedBox(height: 10),
-            _buildTextField(addressController, "Address"),
+            _buildTextField(addressController, "Address (پتہ)"),
             const SizedBox(height: 20),
-            const Text("Bank Accounts", style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              "Bank Accounts (بینک اکاؤنٹس)",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 10),
             ListView.builder(
               itemCount: bankAccountControllers.length,
@@ -107,16 +110,26 @@ class _AddCustomerPageState extends State<AddCustomerScreen> {
                     padding: const EdgeInsets.all(8),
                     child: Column(
                       children: [
-                        _buildTextField(bankAcc['title']!, "Account Title"),
-                        _buildTextField(bankAcc['number']!, "Account Number"),
-                        _buildTextField(bankAcc['bankName']!, "Bank Name"),
+                        _buildTextField(
+                          bankAcc['title']!,
+                          "Account Title (اکاؤنٹ کا عنوان)",
+                        ),
+                        _buildTextField(
+                          bankAcc['number']!,
+                          "Account Number (اکاؤنٹ نمبر)",
+                        ),
+                        _buildTextField(
+                          bankAcc['bankName']!,
+                          "Bank Name (بینک کا نام)",
+                        ),
+
                         Align(
                           alignment: Alignment.centerRight,
                           child: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () => _removeBankAccountFields(index),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -125,8 +138,20 @@ class _AddCustomerPageState extends State<AddCustomerScreen> {
             ),
             TextButton.icon(
               onPressed: _addBankAccountFields,
-              icon: const Icon(Icons.add),
-              label: const Text("Add Another Account"),
+              icon: const Icon(Icons.add, color: Colors.black),
+              label: const Text(
+                "Add Another Account (نیا اکاؤنٹ شامل کریں)",
+                style: TextStyle(
+                  color: Colors.black,
+                ), // White text for contrast
+              ),
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.grey.shade200, // 👈 Grey background
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             InkWell(
@@ -135,11 +160,11 @@ class _AddCustomerPageState extends State<AddCustomerScreen> {
                 padding: EdgeInsets.all(15),
                 decoration: BoxDecoration(
                   color: Colors.yellow,
-                  borderRadius: BorderRadius.circular(10)
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Text("Save Customer"),
+                child: const Text("Save Customer (کسٹمر محفوظ کریں)"),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -149,6 +174,7 @@ class _AddCustomerPageState extends State<AddCustomerScreen> {
   Widget _buildTextField(TextEditingController controller, String hint) {
     return TextField(
       controller: controller,
+      textAlign: TextAlign.center, // 👈 Center the typing
       decoration: InputDecoration(
         hintText: hint,
         border: const OutlineInputBorder(),
