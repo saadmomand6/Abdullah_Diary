@@ -55,7 +55,7 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text(
+        title: Text(
           "Customer Info (کسٹمر کی تفصیل)",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
@@ -71,7 +71,7 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
             },
             child: const Text(
               "Edit Details (ترمیم کریں)",
-              style: TextStyle(color: Colors.blue, fontSize: 14),
+              style: TextStyle(color: Colors.black, fontSize: 14),
             ),
           ),
         ],
@@ -159,7 +159,7 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey.shade300),
             borderRadius: BorderRadius.circular(8),
-            color: Colors.grey.shade100,
+            color: Colors.white,
           ),
           child: Text(
             value,
