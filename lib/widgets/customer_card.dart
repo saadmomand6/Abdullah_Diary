@@ -39,7 +39,7 @@ class _CustomerrCardState extends State<CustomerrCard> {
               name: widget.name,
               contact: widget.contact ?? '',
               address: widget.address ?? '',
-              bankAccounts: const [], // Pass bank accounts list here if available
+              //bankAccounts: const [], // Pass bank accounts list here if available
             ));
       },
       child: Padding(
