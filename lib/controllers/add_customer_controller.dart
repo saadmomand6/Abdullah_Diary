@@ -54,6 +54,24 @@ class CustomerController extends GetxController {
     accounts.removeAt(index);
   }
 
+  void loadBankAccountsForCustomer(int customerId) async {
+  final fetchedAccounts = await DBHelper.getBankAccountsForCustomer(customerId);
+
+  accounts.clear(); // Clear any existing input fields
+
+  for (var account in fetchedAccounts) {
+    accounts.add({
+      'accountTitle': TextEditingController(text: account.title),
+      'accountNumber': TextEditingController(text: account.number),
+      'bankName': TextEditingController(text: account.bankName),
+    });
+  }
+
+  if (accounts.isEmpty) {
+    addBankAccount(); // Ensure at least one blank entry
+  }
+}
+
   void updateCustomer(int id) async {
     final updatedCustomer = CustomerItemModel(
       id: id,

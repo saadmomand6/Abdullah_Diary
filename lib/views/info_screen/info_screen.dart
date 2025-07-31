@@ -61,7 +61,7 @@ print("ALL ACCOUNTS IN DB: $allAccounts");
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.yellow,
         title: Text(
           "Customer Info (کسٹمر کی تفصیل)",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

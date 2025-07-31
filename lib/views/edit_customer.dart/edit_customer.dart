@@ -25,7 +25,7 @@ class EditCustomerScreen extends StatelessWidget {
     controller.addressController.text = address;
 
     // If bank accounts are stored in DB, load them here using ID
-    // Example: controller.loadBankAccountsForCustomer(id);
+    controller.loadBankAccountsForCustomer(id);
   }
 
   InputDecoration _inputDecoration(String label) {
@@ -205,33 +205,35 @@ class EditCustomerScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 80), // bottom spacing
+                    InkWell(
+    onTap: () {
+      if (_formKey.currentState!.validate()) {
+        controller.updateCustomer(id);
+      }
+    },
+    child: Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.yellow,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Center(
+        child: Text(
+          "UPDATE (اپ ڈیٹ کریں)",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ),
+    ),
+    ),
                   ],
                 ),
               )),
         ),
       ),
 
-      // Bottom Save Button
-      bottomNavigationBar: SizedBox(
-        width: double.infinity,
-        height: 60,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.yellow,
-            foregroundColor: Colors.black,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-          ),
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              controller.updateCustomer(id); // ✅ Uses int ID
-            }
-          },
-          child: Text(
-            "UPDATE (اپ ڈیٹ کریں)",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
+    
+      
     );
   }
 }
