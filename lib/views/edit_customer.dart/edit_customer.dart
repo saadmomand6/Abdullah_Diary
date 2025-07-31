@@ -1,38 +1,51 @@
 import 'package:abdullah_diary/controllers/add_customer_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../models/customer_card_models.dart';
 
-class EditCustomerScreen extends StatelessWidget {
-  final int id; // ✅ Updated from String to int
+class EditCustomerScreen extends StatefulWidget {
+  final int id;
   final String name;
   final String contact;
   final String address;
 
-  final CustomerController controller = Get.put(CustomerController());
-
-  final _formKey = GlobalKey<FormState>();
-
-  EditCustomerScreen({
+  const EditCustomerScreen({
     super.key,
-    required this.id,        // ✅ Updated type
+    required this.id,
     required this.name,
     required this.contact,
     required this.address,
-  }) {
-    // Pre-fill controllers with the passed data
-    controller.nameController.text = name;
-    controller.contactController.text = contact;
-    controller.addressController.text = address;
+  });
 
-    // If bank accounts are stored in DB, load them here using ID
-    controller.loadBankAccountsForCustomer(id);
+  @override
+  State<EditCustomerScreen> createState() => _EditCustomerScreenState();
+}
+
+class _EditCustomerScreenState extends State<EditCustomerScreen> {
+  final CustomerController controller = Get.put(CustomerController());
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Set customer data properly
+    controller.setCustomerData(
+      CustomerItemModel(
+        id: widget.id,
+        name: widget.name,
+        contactNumber: widget.contact,
+        adrress: widget.address,
+        accounts: [],
+      ),
+    );
   }
 
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,
-      labelStyle: TextStyle(fontSize: 14),
-      border: OutlineInputBorder(),
+      labelStyle: const TextStyle(fontSize: 14),
+      border: const OutlineInputBorder(),
     );
   }
 
@@ -47,7 +60,7 @@ class EditCustomerScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.yellow,
-        title: Text(
+        title: const Text(
           "Edit Customer (کسٹمر میں ترمیم کریں)",
           style: TextStyle(
             fontSize: 16,
@@ -70,14 +83,12 @@ class EditCustomerScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                       textDirection:
                           _getDirection(controller.nameController.text),
-                      onChanged: (val) =>
-                          controller.nameController.text = val,
                       decoration:
                           _inputDecoration("Customer Name (کسٹمر کا نام)"),
                       validator: (value) =>
                           value!.isEmpty ? "Enter customer name" : null,
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     // Contact Number
                     TextFormField(
@@ -85,15 +96,13 @@ class EditCustomerScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                       textDirection:
                           _getDirection(controller.contactController.text),
-                      onChanged: (val) =>
-                          controller.contactController.text = val,
                       decoration:
                           _inputDecoration("Contact Number (رابطہ نمبر)"),
                       keyboardType: TextInputType.phone,
                       validator: (value) =>
                           value!.isEmpty ? "Enter contact number" : null,
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     // Address
                     TextFormField(
@@ -101,20 +110,18 @@ class EditCustomerScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                       textDirection:
                           _getDirection(controller.addressController.text),
-                      onChanged: (val) =>
-                          controller.addressController.text = val,
                       decoration: _inputDecoration("Address (پتہ)"),
                       validator: (value) =>
                           value!.isEmpty ? "Enter address" : null,
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                    Text(
+                    const Text(
                       "Bank Accounts (بینک اکاؤنٹس)",
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     // Dynamic Bank Accounts
                     ...controller.accounts.asMap().entries.map((entry) {
@@ -128,22 +135,18 @@ class EditCustomerScreen extends StatelessWidget {
                             textAlign: TextAlign.center,
                             textDirection: _getDirection(
                                 account['accountTitle']!.text),
-                            onChanged: (val) =>
-                                account['accountTitle']!.text = val,
                             decoration: _inputDecoration(
                                 "Account Title #${index + 1} (اکاؤنٹ کا نام)"),
                             validator: (value) => value!.isEmpty
                                 ? "Enter account title"
                                 : null,
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           TextFormField(
                             controller: account['accountNumber'],
                             textAlign: TextAlign.center,
                             textDirection: _getDirection(
                                 account['accountNumber']!.text),
-                            onChanged: (val) =>
-                                account['accountNumber']!.text = val,
                             decoration: _inputDecoration(
                                 "Account Number #${index + 1} (اکاؤنٹ نمبر)"),
                             keyboardType: TextInputType.number,
@@ -151,34 +154,32 @@ class EditCustomerScreen extends StatelessWidget {
                                 ? "Enter account number"
                                 : null,
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           TextFormField(
                             controller: account['bankName'],
                             textAlign: TextAlign.center,
                             textDirection:
                                 _getDirection(account['bankName']!.text),
-                            onChanged: (val) =>
-                                account['bankName']!.text = val,
                             decoration: _inputDecoration(
                                 "Bank Name #${index + 1} (بینک کا نام)"),
                             validator: (value) =>
                                 value!.isEmpty ? "Enter bank name" : null,
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
 
-                          // Remove account button
                           if (controller.accounts.length > 1)
                             Align(
                               alignment: Alignment.centerRight,
                               child: TextButton.icon(
-                                icon: Icon(Icons.delete, color: Colors.red),
-                                label: Text("Remove (حذف کریں)",
+                                icon:
+                                    const Icon(Icons.delete, color: Colors.red),
+                                label: const Text("Remove (حذف کریں)",
                                     style: TextStyle(color: Colors.red)),
                                 onPressed: () =>
                                     controller.removeBankAccount(index),
                               ),
                             ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                         ],
                       );
                     }),
@@ -189,13 +190,13 @@ class EditCustomerScreen extends StatelessWidget {
                       child: InkWell(
                         onTap: controller.addBankAccount,
                         child: Container(
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                               color: Colors.yellow,
                               borderRadius: BorderRadius.circular(20)),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
-                            children: [
+                            children: const [
                               Icon(Icons.add),
                               SizedBox(width: 8),
                               Text("Add Another Account (نیا اکاؤنٹ شامل کریں)"),
@@ -204,36 +205,37 @@ class EditCustomerScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 80), // bottom spacing
+                    const SizedBox(height: 80),
+
+                    // Submit button
                     InkWell(
-    onTap: () {
-      if (_formKey.currentState!.validate()) {
-        controller.updateCustomer(id);
-      }
-    },
-    child: Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.yellow,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: const Center(
-        child: Text(
-          "UPDATE (اپ ڈیٹ کریں)",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      ),
-    ),
-    ),
+                      onTap: () async {
+                        if (_formKey.currentState!.validate()) {
+                          controller.updateCustomer(widget.id);
+                          Get.back(result: true); // ✅ Send result
+                        }
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: Colors.yellow,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "UPDATE (اپ ڈیٹ کریں)",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               )),
         ),
       ),
-
-    
-      
     );
   }
 }

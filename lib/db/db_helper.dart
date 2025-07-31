@@ -77,15 +77,20 @@ class DBHelper {
     return customers;
   }
 
-  static Future<void> updateCustomer(CustomerItemModel customer) async {
-    final db = await database();
-    await db.update(
-      'customers',
-      customer.toMap(),
-      where: 'id = ?',
-      whereArgs: [customer.id],
-    );
-  }
+static Future<void> updateCustomer(CustomerItemModel customer) async {
+  final db = await DBHelper.database(); // 👈 with parentheses
+
+  await db.update(
+    'customers',
+    {
+      'name': customer.name,
+      'contact': customer.contactNumber,
+      'address': customer.adrress,
+    },
+    where: 'id = ?',
+    whereArgs: [customer.id],
+  );
+}
 
   static Future<void> deleteCustomer(int id) async {
     final db = await database();
