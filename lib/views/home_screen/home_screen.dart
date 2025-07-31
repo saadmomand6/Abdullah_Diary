@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-  "Abdullah Diary (عبداللہ ڈائری)",
+  "ABD Accounts Diary",
   style: TextStyle(color: Colors.black),
 ),
         automaticallyImplyLeading: false,
