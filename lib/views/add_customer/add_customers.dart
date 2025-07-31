@@ -73,11 +73,12 @@ class _AddCustomerPageState extends State<AddCustomerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: const Text(
           "Add Customer (کسٹمر شامل کریں)",
-          style: TextStyle(fontSize: 18, color: Colors.black),
+          style: TextStyle(fontSize: 16, color: Colors.black),
         ),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
@@ -100,6 +101,7 @@ class _AddCustomerPageState extends State<AddCustomerScreen> {
               itemBuilder: (_, index) {
                 final bankAcc = bankAccountControllers[index];
                 return Card(
+                  color: Colors.white,
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: Padding(
                     padding: const EdgeInsets.all(8),
@@ -127,9 +129,16 @@ class _AddCustomerPageState extends State<AddCustomerScreen> {
               label: const Text("Add Another Account"),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _saveCustomer,
-              child: const Text("Save Customer"),
+            InkWell(
+              onTap: _saveCustomer,
+              child: Container(
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: Colors.yellow,
+                  borderRadius: BorderRadius.circular(10)
+                ),
+                child: const Text("Save Customer"),
+              ),
             )
           ],
         ),

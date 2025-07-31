@@ -50,7 +50,7 @@ class EditCustomerScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       title: Text("Edit Customer (کسٹمر میں ترمیم کریں)",
         style: TextStyle(
-        fontSize: 18, // 👈 Change this to your desired size
+        fontSize: 16, // 👈 Change this to your desired size
         fontWeight: FontWeight.bold, // Optional
         color: Colors.black,         // Optional if you want dark text
         ),
