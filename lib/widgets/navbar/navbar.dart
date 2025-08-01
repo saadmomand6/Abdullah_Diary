@@ -1,4 +1,5 @@
 import 'package:abdullah_diary/views/home_screen/home_screen.dart';
+import 'package:abdullah_diary/views/settings_screen.dart'; // Create this if not already
 import 'package:flutter/material.dart';
 
 class NavBar extends StatefulWidget {
@@ -13,6 +14,7 @@ class _NavBarState extends State<NavBar> {
 
   final List<Widget> _screens = [
     HomeScreen(),
+    SettingsScreen(), // Add your Settings screen here
   ];
 
   @override
@@ -32,11 +34,31 @@ class _NavBarState extends State<NavBar> {
                 topRight: Radius.circular(16.0),
               ),
             ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // Settings Icon
+                IconButton(
+                  icon: Icon(
+                    Icons.settings,
+                    color: _currentIndex == 1 ? Colors.red : Colors.grey,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _currentIndex = 1;
+                    });
+                  },
+                ),
+
+                const SizedBox(width: 60), // Space for center button
+              ],
+            ),
           ),
 
-          // Floating Home Icon
+          // Floating Home Icon in the center
           Positioned(
-            top: -10, // make it float above the navbar
+            top: -10,
             left: 0,
             right: 0,
             child: GestureDetector(
@@ -47,7 +69,7 @@ class _NavBarState extends State<NavBar> {
               },
               child: CircleAvatar(
                 radius: 30,
-                backgroundColor: Colors.white,
+                backgroundColor: Colors.red,
                 child: Icon(
                   Icons.home,
                   color: _currentIndex == 0 ? Colors.yellow : Colors.grey,
@@ -61,3 +83,4 @@ class _NavBarState extends State<NavBar> {
     );
   }
 }
+
