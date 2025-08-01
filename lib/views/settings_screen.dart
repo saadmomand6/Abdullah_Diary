@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../db/db_helper.dart'; // If you need DB access
-import '../utils/db_export_import.dart'; // If you extract import/export logic
+import 'package:abdullah_diary/utils/db_export_import.dart'; // If you extract import/export logic
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
