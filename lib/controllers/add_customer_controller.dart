@@ -72,30 +72,28 @@ class CustomerController extends GetxController {
   }
 }
 
-  void updateCustomer(int id) async {
-    final updatedCustomer = CustomerItemModel(
-      id: id,
-      name: nameController.text,
-      contactNumber: contactController.text,
-      adrress: addressController.text,
+
+Future<bool> updateCustomer(int id) async {
+  final updatedCustomer = CustomerItemModel(
+    id: id,
+    name: nameController.text,
+    contactNumber: contactController.text,
+    adrress: addressController.text,
+  );
+
+  await DBHelper.updateCustomer(updatedCustomer);
+  await DBHelper.deleteBankAccountsByCustomerId(id);
+
+  for (var account in accounts) {
+    final bankAccount = BankAccount(
+      title: account['accountTitle']!.text,
+      number: account['accountNumber']!.text,
+      bankName: account['bankName']!.text,
     );
-
-    await DBHelper.updateCustomer(updatedCustomer);
-    await DBHelper.deleteBankAccountsByCustomerId(id);
-
-    for (var account in accounts) {
-      final bankAccount = BankAccount(
-        title: account['accountTitle']!.text,
-        number: account['accountNumber']!.text,
-        bankName: account['bankName']!.text,
-      );
-      await DBHelper.insertBankAccount(bankAccount, id);
-    }
-
-    Get.snackbar("Success", "Customer updated successfully!",
-        snackPosition: SnackPosition.BOTTOM);
-    Get.back();
+    await DBHelper.insertBankAccount(bankAccount, id);
   }
+  return true; // optional return if needed
+}
 
   @override
   void onClose() {
