@@ -27,13 +27,8 @@ class CustomerCard extends StatelessWidget {
     bool isUrdu = _isUrdu(name);
 
     return InkWell(
-      onTap: () {
-        Get.to(() => CustomerInfoScreen(
-              id: id,
-              name: name,
-              contact: contact ?? '',
-              address: address ?? '',
-            ));
+       onTap: () async {
+        await Get.to(() => CustomerInfoScreen(id: id));
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),

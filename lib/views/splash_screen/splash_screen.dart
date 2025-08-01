@@ -42,25 +42,38 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         decoration: const BoxDecoration(color: Colors.yellow),
         child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const Spacer(),
               AnimatedBuilder(
                 animation: _controller,
                 builder: (BuildContext context, child) {
                   return Transform.scale(
-                    scale: 0.8 + 0.2 * math.sin(_controller.value * 2 * math.pi),
+                    scale:
+                        0.8 + 0.2 * math.sin(_controller.value * 2 * math.pi),
                     child: child,
                   );
                 },
-                child: Container(
-                  height: 200,
-                  width: 200,
-                  child: Image.asset(
-                    'assets/logo.png',
-                    fit: BoxFit.contain,
-                  ),
+                child: Image.asset(
+                  'assets/logo.png',
+                  width: 250,
+                  fit: BoxFit.contain,
                 ),
+              ),
+              const Spacer(),
+              Column(
+                children: const [
+                  Text(
+                    'Version: 1.0.0+1',
+                    style: TextStyle(fontSize: 12,fontWeight: FontWeight.w400, color: Colors.black),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "Developed By Inovatiq Biz (Private) Limited",
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400 ,color: Colors.black),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 20), // padding at bottom
+                ],
               ),
             ],
           ),

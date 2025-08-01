@@ -123,4 +123,27 @@ static Future<void> updateCustomer(CustomerItemModel customer) async {
     final db = await database();
     await db.delete('bank_accounts', where: 'customer_id = ?', whereArgs: [customerId]);
   }
+  
+// a function to fetch a specific customer
+  static Future<CustomerItemModel?> getCustomerById(int customerId) async {
+  final db = await database();
+
+  // Fetch customer details
+  final customerMaps = await db.query(
+    'customers',
+    where: 'id = ?',
+    whereArgs: [customerId],
+  );
+
+  if (customerMaps.isEmpty) return null;
+
+  final customer = CustomerItemModel.fromMap(customerMaps.first);
+
+  // Fetch associated bank accounts
+  final accounts = await getBankAccountsForCustomer(customerId);
+  customer.accounts = accounts;
+
+  return customer;
+}
+
 }

@@ -1,39 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:abdullah_diary/models/customer_card_models.dart';
-import 'package:abdullah_diary/views/add_customer/add_customers.dart';
+import 'package:get/get.dart';
+import 'package:abdullah_diary/controllers/get_customer_controller.dart';
 import 'package:abdullah_diary/widgets/customer_card.dart';
-import 'package:abdullah_diary/db/db_helper.dart';
+import 'package:abdullah_diary/views/add_customer/add_customers.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatelessWidget {
+  HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-TextEditingController searchedtext = TextEditingController();
-
-class _HomeScreenState extends State<HomeScreen> {
-  late Future<List<CustomerItemModel>> _customerList;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCustomers();
-  }
-
-  void _loadCustomers() {
-    _customerList = DBHelper.getAllCustomers();
-  }
+  final GetCustomerController controller = Get.put(GetCustomerController());
+  final TextEditingController searchedtext = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-  "ABD Accounts Diary",
-  style: TextStyle(color: Colors.black),
-),
+        title: const Text("ABD Accounts Diary", style: TextStyle(color: Colors.black)),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.yellow,
         actions: [
@@ -41,15 +22,12 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () async {
               await Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => AddCustomerScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => AddCustomerScreen()),
               );
-              _loadCustomers(); // reload after adding
-              setState(() {});
+              controller.fetchCustomers(); // reload customers after adding
             },
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
@@ -61,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
+          // Search bar
           Container(
             height: 95,
             width: MediaQuery.of(context).size.width,
@@ -72,77 +51,52 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
               child: TextFormField(
                 controller: searchedtext,
                 cursorColor: Colors.yellow,
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   hintText: "Search Customers (کسٹمرز تلاش کریں)",
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-                  hintStyle: const TextStyle(color: Colors.black),
-                  filled: true,
-                  fillColor: Colors.transparent,
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.search, color: Colors.black),
+                    onPressed: () => controller.fetchCustomers(),
+                  ),
                   border: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide:
-                        const BorderSide(width: 2, color: Colors.red),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide:
-                        const BorderSide(width: 1, color: Colors.grey),
-                  ),
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {});
-                    },
-                    icon: const Icon(Icons.search, color: Colors.black),
-                  ),
                 ),
-                onChanged: (value) {
-                  setState(() {});
-                },
+                onChanged: (value) => controller.fetchCustomers(),
               ),
             ),
           ),
+
+          // Customer list using Obx
           Expanded(
-            child: FutureBuilder<List<CustomerItemModel>>(
-              future: _customerList,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+            child: Obx(() {
+              if (controller.customers.isEmpty) {
+                return const Center(child: Text("No customers found."));
+              }
 
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text("No customers found."));
-                }
+              final filtered = controller.customers.where((customer) {
+                return customer.name
+                    .toLowerCase()
+                    .contains(searchedtext.text.toLowerCase());
+              }).toList();
 
-                final filtered = snapshot.data!.where((customer) {
-                  return customer.name
-                      .toLowerCase()
-                      .contains(searchedtext.text.toLowerCase());
-                }).toList();
-
-                return ListView.builder(
-                  itemCount: filtered.length,
-                  itemBuilder: (context, index) {
-                    final customer = filtered[index];
-                    return CustomerCard(
-                      id: customer.id!, // ✅ pass ID
-                      name: customer.name,
-                      address: customer.adrress,
-                      contact: customer.contactNumber,
-                    );
-                  },
-                );
-              },
-            ),
+              return ListView.builder(
+                itemCount: filtered.length,
+                itemBuilder: (context, index) {
+                  final customer = filtered[index];
+                  return CustomerCard(
+                    id: customer.id!,
+                    name: customer.name,
+                    contact: customer.contactNumber,
+                    address: customer.adrress,
+                  );
+                },
+              );
+            }),
           ),
         ],
       ),
