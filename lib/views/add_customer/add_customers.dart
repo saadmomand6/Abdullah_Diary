@@ -78,7 +78,7 @@ class _AddCustomerPageState extends State<AddCustomerScreen> {
         backgroundColor: Colors.yellow,
         title: const Text(
           "Add Customer (کسٹمر شامل کریں)",
-          style: TextStyle(fontSize: 16, color: Colors.black),
+          style: TextStyle(fontSize: 20, color: Colors.black),
         ),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
@@ -94,7 +94,7 @@ class _AddCustomerPageState extends State<AddCustomerScreen> {
             const SizedBox(height: 20),
             const Text(
               "Bank Accounts (بینک اکاؤنٹس)",
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             ListView.builder(
@@ -155,16 +155,25 @@ class _AddCustomerPageState extends State<AddCustomerScreen> {
             ),
             const SizedBox(height: 20),
             InkWell(
-              onTap: _saveCustomer,
-              child: Container(
-                padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: Colors.yellow,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Text("Save Customer (کسٹمر محفوظ کریں)"),
-              ),
-            ),
+  onTap: _saveCustomer,
+  child: Container(
+    padding: const EdgeInsets.all(15),
+    decoration: BoxDecoration(
+      color: Colors.yellow,
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: const Center(
+      child: Text(
+        "Save Customer \n (کسٹمر محفوظ کریں)",
+        style: TextStyle(
+          fontSize: 18, // 👈 Font size increased
+          fontWeight: FontWeight.bold, // 👈 Optional: make it bold
+        ),
+        textAlign: TextAlign.center, // 👈 Optional for safety
+      ),
+    ),
+  ),
+),
           ],
         ),
       ),
@@ -172,13 +181,16 @@ class _AddCustomerPageState extends State<AddCustomerScreen> {
   }
 
   Widget _buildTextField(TextEditingController controller, String hint) {
-    return TextField(
-      controller: controller,
-      textAlign: TextAlign.center, // 👈 Center the typing
-      decoration: InputDecoration(
-        hintText: hint,
-        border: const OutlineInputBorder(),
-      ),
-    );
-  }
+  return TextField(
+    controller: controller,
+    textAlign: TextAlign.center,
+    style: const TextStyle(fontSize: 20), // 👈 Input text font size
+    decoration: InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(fontSize: 20), // 👈 Hint text font size
+      border: const OutlineInputBorder(),
+    ),
+  );
+}
+  
 }

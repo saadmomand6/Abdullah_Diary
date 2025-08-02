@@ -59,15 +59,18 @@ class CustomerCard extends StatelessWidget {
                   if (isUrdu) const SizedBox(width: 8),
 
                   Expanded(
-                    child: Text(
-                      name,
-                      textAlign: isUrdu ? TextAlign.right : TextAlign.left,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: MediaQuery.of(context).size.height * 0.02,
-                      ),
-                    ),
-                  ),
+  child: Text(
+    name,
+    textAlign: isUrdu ? TextAlign.right : TextAlign.left,
+    style: TextStyle(
+      color: Colors.black,
+      fontSize: 26, // 👈 Set your desired font size manually here
+      fontFamily: isUrdu ? 'NooriNastaliq' : null, // 👈 Optional: apply Urdu font
+    ),
+    overflow: TextOverflow.ellipsis,
+    maxLines: 1,
+  ),
+),
 
                   if (!isUrdu) const SizedBox(width: 8),
                   if (!isUrdu)
@@ -80,7 +83,8 @@ class CustomerCard extends StatelessWidget {
                 textAlign: isUrdu ? TextAlign.right : TextAlign.left,
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: MediaQuery.of(context).size.height * 0.015,
+                  fontSize: MediaQuery.of(context).size.height * 0.03,
+                  fontFamily: isUrdu ? 'NooriNastaliq' : null, // 👈 Optional: apply Urdu font
                 ),
               ),
               Text(
@@ -88,7 +92,8 @@ class CustomerCard extends StatelessWidget {
                 textAlign: isUrdu ? TextAlign.right : TextAlign.left,
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: MediaQuery.of(context).size.height * 0.015,
+                  fontSize: MediaQuery.of(context).size.height * 0.03,
+                  fontFamily: isUrdu ? 'NooriNastaliq' : null, // 👈 Optional: apply Urdu font
                 ),
               ),
             ],

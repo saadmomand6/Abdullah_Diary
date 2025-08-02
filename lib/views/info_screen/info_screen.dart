@@ -22,8 +22,6 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
   final GetCustomerController controller = Get.find<GetCustomerController>();
   CustomerItemModel? customer;
   bool isLoading = true;
-
-  /// ✅ Keep bankAccounts list for old logic
   List<Map<String, dynamic>> bankAccounts = [];
 
   @override
@@ -33,32 +31,25 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
     fetchBankAccounts();
   }
 
-  /// ✅ Fetch complete customer details (name, contact, address, and accounts)
   Future<void> fetchCustomerData() async {
     setState(() => isLoading = true);
-
     final fetchedCustomer = await DBHelper.getCustomerById(widget.id);
-
     setState(() {
       customer = fetchedCustomer;
       isLoading = false;
     });
   }
 
-  /// ✅ Fetch only the bank accounts separately (old logic)
   Future<void> fetchBankAccounts() async {
     final db = await DBHelper.database();
-
     final accounts = await db.query(
       'bank_accounts',
       where: 'customer_id = ?',
       whereArgs: [widget.id],
     );
-
     final allAccounts = await db.query('bank_accounts');
     print("ALL ACCOUNTS IN DB: $allAccounts");
     print("Fetched accounts for ${widget.id}: $accounts");
-
     setState(() {
       bankAccounts = accounts;
     });
@@ -67,6 +58,15 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
   TextDirection _getDirection(String text) {
     final urduRegex = RegExp(r'[\u0600-\u06FF]');
     return urduRegex.hasMatch(text) ? TextDirection.rtl : TextDirection.ltr;
+  }
+
+  TextStyle _textStyle(String text, double size, [FontWeight weight = FontWeight.normal]) {
+    final urduRegex = RegExp(r'[\u0600-\u06FF]');
+    return TextStyle(
+      fontSize: size,
+      fontWeight: weight,
+      fontFamily: urduRegex.hasMatch(text) ? 'JameelNooriNastaleeq' : null,
+    );
   }
 
   @override
@@ -81,73 +81,81 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
           child: Icon(Icons.arrow_back),
         ),
         backgroundColor: Colors.yellow,
-        title: const Text(
+        title: Text(
           "Customer Info (کسٹمر کی تفصیل)",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: _textStyle("Customer Info (کسٹمر کی تفصیل)", 20, FontWeight.bold),
         ),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              if (customer != null) {
-                final updated = await Get.to(() => EditCustomerScreen(
-                      id: customer!.id!,
-                      name: customer!.name,
-                      contact: customer!.contactNumber,
-                      address: customer!.adrress,
-                    ));
-
-                if (updated == true) {
-                  await fetchCustomerData();
-                  await fetchBankAccounts();
-                }
-              }
-            },
-            child: const Text(
-              "Edit Details (ترمیم کریں)",
-              style: TextStyle(color: Colors.black, fontSize: 14),
-            ),
-          ),
-        ],
       ),
       backgroundColor: Colors.white,
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : customer == null
               ? const Center(child: Text("Customer not found"))
-              : Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildInfoItem(
-                            "Customer Name (کسٹمر کا نام)", customer!.name),
-                        const SizedBox(height: 10),
-                        _buildInfoItem("Contact Number (رابطہ نمبر)",
-                            customer!.contactNumber),
-                        const SizedBox(height: 10),
-                        _buildInfoItem("Address (پتہ)", customer!.adrress),
-                        const SizedBox(height: 20),
-                        const Text(
-                          "Bank Accounts (بینک اکاؤنٹس)",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+              : Column(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildInfoItem("Customer Name (کسٹمر کا نام)", customer!.name),
+                              const SizedBox(height: 10),
+                              _buildInfoItem("Contact Number (رابطہ نمبر)", customer!.contactNumber),
+                              const SizedBox(height: 10),
+                              _buildInfoItem("Address (پتہ)", customer!.adrress),
+                              const SizedBox(height: 20),
+                              Text(
+                                "Bank Accounts (بینک اکاؤنٹس)",
+                                style: _textStyle("Bank Accounts (بینک اکاؤنٹس)", 25, FontWeight.bold),
+                              ),
+                              const SizedBox(height: 10),
+                              isLoading
+                                  ? const Center(child: CircularProgressIndicator())
+                                  : (bankAccounts.isEmpty &&
+                                          (customer?.accounts.isEmpty ?? true))
+                                      ? Text(
+                                          "No Bank Accounts Added (کوئی بینک اکاؤنٹس نہیں)",
+                                          style: _textStyle("No Bank Accounts Added (کوئی بینک اکاؤنٹس نہیں)", 15, FontWeight.normal).copyWith(color: Colors.grey),
+                                        )
+                                      : _buildBankAccountsTable(),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 10),
-
-                        /// ✅ Bank accounts handling
-                        isLoading
-                            ? const Center(child: CircularProgressIndicator())
-                            : (bankAccounts.isEmpty &&
-                                    (customer?.accounts.isEmpty ?? true))
-                                ? const Text(
-                                    "No Bank Accounts Added (کوئی بینک اکاؤنٹس نہیں)",
-                                    style: TextStyle(color: Colors.grey),
-                                  )
-                                : _buildBankAccountsTable(),
-                      ],
+                      ),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          onPressed: () async {
+                            if (customer != null) {
+                              final updated = await Get.to(() => EditCustomerScreen(
+                                    id: customer!.id!,
+                                    name: customer!.name,
+                                    contact: customer!.contactNumber,
+                                    address: customer!.adrress,
+                                  ));
+                              if (updated == true) {
+                                await fetchCustomerData();
+                                await fetchBankAccounts();
+                              }
+                            }
+                          },
+                          child: Text(
+                            "Edit Details (ترمیم کریں)",
+                            style: _textStyle("Edit Details (ترمیم کریں)", 20, FontWeight.bold).copyWith(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
     );
   }
@@ -156,11 +164,7 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black87),
-        ),
+        Text(label, style: _textStyle(label, 20, FontWeight.bold)),
         const SizedBox(height: 4),
         Container(
           width: double.infinity,
@@ -173,16 +177,14 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
           child: Text(
             value,
             textDirection: _getDirection(value),
-            style: const TextStyle(fontSize: 15),
+            style: _textStyle(value, 20),
           ),
         ),
       ],
     );
   }
 
-  /// ✅ Bank accounts table (combines customer.accounts + bankAccounts list)
   Widget _buildBankAccountsTable() {
-    // Prefer customer.accounts if available, else use bankAccounts list
     final List<Map<String, dynamic>> accountsList = customer!.accounts.isNotEmpty
         ? customer!.accounts
             .map((acc) => {
@@ -202,33 +204,27 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
         3: IntrinsicColumnWidth(),
       },
       children: [
-        // Header Row
-        const TableRow(
-          decoration: BoxDecoration(color: Color(0xFFE0E0E0)),
+        TableRow(
+          decoration: const BoxDecoration(color: Color(0xFFE0E0E0)),
           children: [
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Account Title',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              child: Text('Account Title', style: _textStyle('Account Title', 18, FontWeight.bold)),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Account Number',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              child: Text('Account Number', style: _textStyle('Account Number', 18, FontWeight.bold)),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Bank Name',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              child: Text('Bank Name', style: _textStyle('Bank Name', 18, FontWeight.bold)),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Share',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              child: Text('Share', style: _textStyle('Share', 18, FontWeight.bold)),
             ),
           ],
         ),
-        // Data Rows
         ...accountsList.map((account) {
           final title = account['title'] ?? '';
           final number = account['number'] ?? '';
@@ -238,21 +234,20 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(title),
+                child: Text(title, style: _textStyle(title, 18)),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(number),
+                child: Text(number, style: _textStyle(number, 18)),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(bankName),
+                child: Text(bankName, style: _textStyle(bankName, 18)),
               ),
               Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: IconButton(
-                  icon:
-                      const Icon(Icons.share, size: 20, color: Colors.green),
+                  icon: const Icon(Icons.share, size: 30, color: Colors.green),
                   onPressed: () {
                     final message = '''
 📋 *Bank Account Details*

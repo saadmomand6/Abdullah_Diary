@@ -115,42 +115,59 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           // Search bar
           Container(
-            height: 95,
-            width: MediaQuery.of(context).size.width,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(40),
-                bottomRight: Radius.circular(40),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-              child: TextFormField(
-                controller: searchedtext,
-                cursorColor: Colors.yellow,
-                style: const TextStyle(color: Colors.black),
-                decoration: InputDecoration(
-                  hintText: "Search Customers (کسٹمرز تلاش کریں)",
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.search, color: Colors.black),
-                    onPressed: () => controller.fetchCustomers(),
-                  ),
-                  border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                ),
-                onChanged: (value) => controller.fetchCustomers(),
-              ),
-            ),
-          ),
+  height: 95,
+  width: MediaQuery.of(context).size.width,
+  decoration: const BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.only(
+      bottomLeft: Radius.circular(40),
+      bottomRight: Radius.circular(40),
+    ),
+  ),
+  child: Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+    child: TextFormField(
+      controller: searchedtext,
+      cursorColor: Colors.yellow,
+      style: const TextStyle(
+        color: Colors.black,
+        fontSize: 18, // 👈 Input text font size
+      ),
+      decoration: InputDecoration(
+        hintText: "Search Customers (کسٹمرز تلاش کریں)",
+        hintStyle: const TextStyle(
+          fontSize: 18, // 👈 Hint text font size
+          color: Colors.grey,
+          fontFamily: 'NooriNastaliq', // 👈 Optional Urdu font for hint
+        ),
+        suffixIcon: IconButton(
+          icon: const Icon(Icons.search, color: Colors.black),
+          onPressed: () => controller.fetchCustomers(),
+        ),
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+      ),
+      onChanged: (value) => controller.fetchCustomers(),
+    ),
+  ),
+),
 
           // Customer list
           Expanded(
             child: Obx(() {
-              if (controller.customers.isEmpty) {
-                return const Center(child: Text("No customers found."));
-              }
+  if (controller.customers.isEmpty) {
+    return const Center(
+      child: Text(
+        "No customers found.",
+        style: TextStyle(
+          fontSize: 20, // 👈 Increase this value for larger text
+          fontWeight: FontWeight.w500, // Optional: make it semi-bold
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
 
               final filtered = controller.customers.where((customer) {
                 return customer.name
