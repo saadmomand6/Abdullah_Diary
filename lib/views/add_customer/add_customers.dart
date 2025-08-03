@@ -184,10 +184,10 @@ class _AddCustomerPageState extends State<AddCustomerScreen> {
   return TextField(
     controller: controller,
     textAlign: TextAlign.center,
-    style: const TextStyle(fontSize: 20), // 👈 Input text font size
+    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold), // 👈 Input text font size
     decoration: InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(fontSize: 20), // 👈 Hint text font size
+      hintStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold), // 👈 Hint text font size
       border: const OutlineInputBorder(),
     ),
   );

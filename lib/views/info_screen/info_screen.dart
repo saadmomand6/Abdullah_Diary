@@ -317,7 +317,7 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
               Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: IconButton(
-                  icon: const Icon(Icons.share, size: 30, color: Colors.green),
+                  icon: status == 'Active' ? const Icon(Icons.share, size: 30, color: Colors.green): SizedBox(),
                   onPressed: () {
                     final message =
                         '''

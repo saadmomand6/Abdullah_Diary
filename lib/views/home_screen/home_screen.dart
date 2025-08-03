@@ -129,20 +129,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 controller: searchedtext,
                 cursorColor: Colors.yellow,
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize:
-                      MediaQuery.of(context).size.width *
-                      0.045, // 👈 Responsive text size
-                ),
-                decoration: InputDecoration(
-                  hintText: "Search Customers (کسٹمرز تلاش کریں)",
-                  hintStyle: TextStyle(
-                    fontSize:
-                        MediaQuery.of(context).size.width *
-                        0.045, // 👈 Responsive hint size
-                    color: Colors.black,
-                    fontFamily: 'NooriNastaliq',
-                  ),
+  color: Colors.black,
+  fontSize: 26, // 👈 Manually set text size
+),
+decoration: InputDecoration(
+  hintText: "Search Customers (کسٹمرز تلاش کریں)",
+  hintStyle: TextStyle(
+    fontSize: 26, // 👈 Manually set hint text size
+    color: Colors.black,
+    fontFamily: 'NooriNastaliq',
+  ),
+
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.search, color: Colors.black),
                     onPressed: () => controller.fetchCustomers(),
@@ -165,6 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+          
 
           // Customer list
           Expanded(

@@ -92,6 +92,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                               TextDirection.rtl
                           ? 'JameelNooriNastaleeq'
                           : null,
+                      fontWeight: FontWeight.bold
                     ),
                     decoration: _inputDecoration(
                       "Customer Name (کسٹمر کا نام)",
@@ -115,9 +116,9 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                               TextDirection.rtl
                           ? 'JameelNooriNastaleeq'
                           : null,
+                      fontWeight: FontWeight.bold
                     ),
                     decoration: _inputDecoration("Contact Number (رابطہ نمبر)"),
-                    keyboardType: TextInputType.phone,
                     validator: (value) =>
                         value!.isEmpty ? "Enter contact number" : null,
                   ),
@@ -137,6 +138,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                               TextDirection.rtl
                           ? 'JameelNooriNastaleeq'
                           : null,
+                          fontWeight: FontWeight.bold
                     ),
                     decoration: _inputDecoration("Address (پتہ)"),
                     validator: (value) =>
@@ -170,6 +172,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                     TextDirection.rtl
                                 ? 'JameelNooriNastaleeq'
                                 : null,
+                                fontWeight: FontWeight.bold
                           ),
                           decoration: _inputDecoration(
                             "Account Title #${index + 1} (اکاؤنٹ کا نام)",
@@ -191,6 +194,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                     TextDirection.rtl
                                 ? 'JameelNooriNastaleeq'
                                 : null,
+                                fontWeight: FontWeight.bold
                           ),
                           decoration: _inputDecoration(
                             "Account Number #${index + 1} (اکاؤنٹ نمبر)",
@@ -213,6 +217,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                     TextDirection.rtl
                                 ? 'JameelNooriNastaleeq'
                                 : null,
+                                fontWeight: FontWeight.bold
                           ),
                           decoration: _inputDecoration(
                             "Bank Name #${index + 1} (بینک کا نام)",
