@@ -11,24 +11,59 @@ class DBHelper {
     return _db!;
   }
 
-  static Future<Database> _initDB() async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'abdullah_diary.db');
+  // static Future<Database> _initDB() async {
+  //   final dbPath = await getDatabasesPath();
+  //   final path = join(dbPath, 'abdullah_diary.db');
 
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _onCreate,
-    );
-  }
+  //   return await openDatabase(
+  //     path,
+  //     version: 1,
+  //     onCreate: _onCreate,
+  //   );
+  // }
 
-  static Future<void> _onCreate(Database db, int version) async {
+//   static Future<void> _onCreate(Database db, int version) async {
+//   await db.execute('''
+//     CREATE TABLE customers (
+//       id INTEGER PRIMARY KEY AUTOINCREMENT,
+//       name TEXT,
+//       contact TEXT,           -- ✅ fixed from contactNumber
+//       address TEXT            -- ✅ fixed from adrress
+//     )
+//   ''');
+
+//   await db.execute('''
+//     CREATE TABLE bank_accounts (
+//       id INTEGER PRIMARY KEY AUTOINCREMENT,
+//       customer_id INTEGER,
+//       title TEXT,
+//       number TEXT,
+//       bank_name TEXT
+//     )
+//   ''');
+// }
+static Future<Database> _initDB() async {
+  final dbPath = await getDatabasesPath();
+  final path = join(dbPath, 'abdullah_diary.db');
+
+  return await openDatabase(
+    path,
+    version: 2, // increment version
+    onCreate: _onCreate,
+    onUpgrade: (db, oldVersion, newVersion) async {
+      if (oldVersion < 2) {
+        await db.execute("ALTER TABLE bank_accounts ADD COLUMN status TEXT DEFAULT 'Active'");
+      }
+    },
+  );
+}
+static Future<void> _onCreate(Database db, int version) async {
   await db.execute('''
     CREATE TABLE customers (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT,
-      contact TEXT,           -- ✅ fixed from contactNumber
-      address TEXT            -- ✅ fixed from adrress
+      contact TEXT,
+      address TEXT
     )
   ''');
 
@@ -38,11 +73,11 @@ class DBHelper {
       customer_id INTEGER,
       title TEXT,
       number TEXT,
-      bank_name TEXT
+      bank_name TEXT,
+      status TEXT DEFAULT 'Active'   -- NEW COLUMN
     )
   ''');
 }
-
   static Future<void> insertCustomer(CustomerItemModel customer) async {
   final db = await database();
 
@@ -77,9 +112,24 @@ class DBHelper {
     return customers;
   }
 
-static Future<void> updateCustomer(CustomerItemModel customer) async {
-  final db = await DBHelper.database(); // 👈 with parentheses
+// static Future<void> updateCustomer(CustomerItemModel customer) async {
+//   final db = await DBHelper.database(); // 👈 with parentheses
 
+//   await db.update(
+//     'customers',
+//     {
+//       'name': customer.name,
+//       'contact': customer.contactNumber,
+//       'address': customer.adrress,
+//     },
+//     where: 'id = ?',
+//     whereArgs: [customer.id],
+//   );
+// }
+static Future<void> updateCustomer(CustomerItemModel customer) async {
+  final db = await DBHelper.database();
+
+  // Update the customer details
   await db.update(
     'customers',
     {
@@ -90,6 +140,27 @@ static Future<void> updateCustomer(CustomerItemModel customer) async {
     where: 'id = ?',
     whereArgs: [customer.id],
   );
+
+  // Update each bank account including status
+  for (final account in customer.accounts) {
+    if (account.id != null) {
+      // If account exists, update it
+      await db.update(
+        'bank_accounts',
+        {
+          'title': account.title,
+          'number': account.number,
+          'bank_name': account.bankName,
+          'status': account.status, // 👈 Update status here
+        },
+        where: 'id = ?',
+        whereArgs: [account.id],
+      );
+    } else {
+      // If it's a new account (no ID yet), insert it
+      await insertBankAccount(account, customer.id!);
+    }
+  }
 }
 
   static Future<void> deleteCustomer(int id) async {
@@ -98,15 +169,34 @@ static Future<void> updateCustomer(CustomerItemModel customer) async {
     await db.delete('bank_accounts', where: 'customer_id = ?', whereArgs: [id]);
   }
 
-  static Future<void> insertBankAccount(BankAccount account, int customerId) async {
-    final db = await database();
-    await db.insert('bank_accounts', {
-      'customer_id': customerId,
-      'title': account.title,
-      'number': account.number,
-      'bank_name': account.bankName,
-    });
-  }
+  // static Future<void> insertBankAccount(BankAccount account, int customerId) async {
+  //   final db = await database();
+  //   await db.insert('bank_accounts', {
+  //     'customer_id': customerId,
+  //     'title': account.title,
+  //     'number': account.number,
+  //     'bank_name': account.bankName,
+  //   });
+  // }
+static Future<void> insertBankAccount(BankAccount account, int customerId) async {
+  final db = await database();
+  await db.insert('bank_accounts', {
+    'customer_id': customerId,
+    'title': account.title,
+    'number': account.number,
+    'bank_name': account.bankName,
+    'status': account.status, // NEW
+  });
+}
+static Future<void> updateBankAccountStatus(int id, String status) async {
+  final db = await database();
+  await db.update(
+    'bank_accounts',
+    {'status': status},
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+}
 
   static Future<List<BankAccount>> getBankAccountsForCustomer(int customerId) async {
     final db = await database();

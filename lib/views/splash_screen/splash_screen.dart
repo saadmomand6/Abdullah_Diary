@@ -63,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               Column(
                 children: const [
                   Text(
-                    'Version: 1.0.0+1',
+                    'Version: 1.0.1',
                     style: TextStyle(fontSize: 12,fontWeight: FontWeight.w400, color: Colors.black),
                   ),
                   SizedBox(height: 10),

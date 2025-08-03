@@ -9,10 +9,7 @@ import 'package:abdullah_diary/views/edit_customer.dart/edit_customer.dart';
 class CustomerInfoScreen extends StatefulWidget {
   final int id;
 
-  const CustomerInfoScreen({
-    super.key,
-    required this.id,
-  });
+  const CustomerInfoScreen({super.key, required this.id});
 
   @override
   State<CustomerInfoScreen> createState() => _CustomerInfoScreenState();
@@ -60,7 +57,11 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
     return urduRegex.hasMatch(text) ? TextDirection.rtl : TextDirection.ltr;
   }
 
-  TextStyle _textStyle(String text, double size, [FontWeight weight = FontWeight.normal]) {
+  TextStyle _textStyle(
+    String text,
+    double size, [
+    FontWeight weight = FontWeight.normal,
+  ]) {
     final urduRegex = RegExp(r'[\u0600-\u06FF]');
     return TextStyle(
       fontSize: size,
@@ -83,80 +84,107 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
         backgroundColor: Colors.yellow,
         title: Text(
           "Customer Info (کسٹمر کی تفصیل)",
-          style: _textStyle("Customer Info (کسٹمر کی تفصیل)", 20, FontWeight.bold),
+          style: _textStyle(
+            "Customer Info (کسٹمر کی تفصیل)",
+            20,
+            FontWeight.bold,
+          ),
         ),
       ),
       backgroundColor: Colors.white,
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : customer == null
-              ? const Center(child: Text("Customer not found"))
-              : Column(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildInfoItem("Customer Name (کسٹمر کا نام)", customer!.name),
-                              const SizedBox(height: 10),
-                              _buildInfoItem("Contact Number (رابطہ نمبر)", customer!.contactNumber),
-                              const SizedBox(height: 10),
-                              _buildInfoItem("Address (پتہ)", customer!.adrress),
-                              const SizedBox(height: 20),
-                              Text(
-                                "Bank Accounts (بینک اکاؤنٹس)",
-                                style: _textStyle("Bank Accounts (بینک اکاؤنٹس)", 25, FontWeight.bold),
-                              ),
-                              const SizedBox(height: 10),
-                              isLoading
-                                  ? const Center(child: CircularProgressIndicator())
-                                  : (bankAccounts.isEmpty &&
-                                          (customer?.accounts.isEmpty ?? true))
-                                      ? Text(
-                                          "No Bank Accounts Added (کوئی بینک اکاؤنٹس نہیں)",
-                                          style: _textStyle("No Bank Accounts Added (کوئی بینک اکاؤنٹس نہیں)", 15, FontWeight.normal).copyWith(color: Colors.grey),
-                                        )
-                                      : _buildBankAccountsTable(),
-                            ],
+          ? const Center(child: Text("Customer not found"))
+          : Column(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildInfoItem(
+                            "Customer Name (کسٹمر کا نام)",
+                            customer!.name,
                           ),
-                        ),
+                          const SizedBox(height: 10),
+                          _buildInfoItem(
+                            "Contact Number (رابطہ نمبر)",
+                            customer!.contactNumber,
+                          ),
+                          const SizedBox(height: 10),
+                          _buildInfoItem("Address (پتہ)", customer!.adrress),
+                          const SizedBox(height: 20),
+                          Text(
+                            "Bank Accounts (بینک اکاؤنٹس)",
+                            style: _textStyle(
+                              "Bank Accounts (بینک اکاؤنٹس)",
+                              25,
+                              FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          isLoading
+                              ? const Center(child: CircularProgressIndicator())
+                              : (bankAccounts.isEmpty &&
+                                    (customer?.accounts.isEmpty ?? true))
+                              ? Text(
+                                  "No Bank Accounts Added (کوئی بینک اکاؤنٹس نہیں)",
+                                  style: _textStyle(
+                                    "No Bank Accounts Added (کوئی بینک اکاؤنٹس نہیں)",
+                                    15,
+                                    FontWeight.normal,
+                                  ).copyWith(color: Colors.grey),
+                                )
+                              : _buildBankAccountsTable(),
+                        ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                          ),
-                          onPressed: () async {
-                            if (customer != null) {
-                              final updated = await Get.to(() => EditCustomerScreen(
-                                    id: customer!.id!,
-                                    name: customer!.name,
-                                    contact: customer!.contactNumber,
-                                    address: customer!.adrress,
-                                  ));
-                              if (updated == true) {
-                                await fetchCustomerData();
-                                await fetchBankAccounts();
-                              }
-                            }
-                          },
-                          child: Text(
-                            "Edit Details (ترمیم کریں)",
-                            style: _textStyle("Edit Details (ترمیم کریں)", 20, FontWeight.bold).copyWith(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      onPressed: () async {
+                        if (customer != null) {
+                          final updated = await Get.to(
+                            () => EditCustomerScreen(
+                              id: customer!.id!,
+                              name: customer!.name,
+                              contact: customer!.contactNumber,
+                              address: customer!.adrress,
+                            ),
+                          );
+                          if (updated == true) {
+                            await fetchCustomerData();
+                            await fetchBankAccounts();
+                          }
+                        }
+                      },
+                      child: Text(
+                        "Edit Details (ترمیم کریں)",
+                        style: _textStyle(
+                          "Edit Details (ترمیم کریں)",
+                          20,
+                          FontWeight.bold,
+                        ).copyWith(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 
@@ -185,14 +213,18 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
   }
 
   Widget _buildBankAccountsTable() {
-    final List<Map<String, dynamic>> accountsList = customer!.accounts.isNotEmpty
+    final List<Map<String, dynamic>> accountsList =
+        customer!.accounts.isNotEmpty
         ? customer!.accounts
-            .map((acc) => {
+              .map(
+                (acc) => {
                   'title': acc.title,
                   'number': acc.number,
-                  'bank_name': acc.bankName
-                })
-            .toList()
+                  'bank_name': acc.bankName,
+                  'status': acc.status, // include status
+                },
+              )
+              .toList()
         : bankAccounts;
 
     return Table(
@@ -201,7 +233,8 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
         0: FlexColumnWidth(2),
         1: FlexColumnWidth(2),
         2: FlexColumnWidth(2),
-        3: IntrinsicColumnWidth(),
+        3: FlexColumnWidth(1.5), // Status column
+        4: IntrinsicColumnWidth(), // Share column
       },
       children: [
         TableRow(
@@ -209,19 +242,38 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
           children: [
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Account Title', style: _textStyle('Account Title', 18, FontWeight.bold)),
+              child: Text(
+                'Account Title',
+                style: _textStyle('Account Title', 18, FontWeight.bold),
+              ),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Account Number', style: _textStyle('Account Number', 18, FontWeight.bold)),
+              child: Text(
+                'Account Number',
+                style: _textStyle('Account Number', 18, FontWeight.bold),
+              ),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Bank Name', style: _textStyle('Bank Name', 18, FontWeight.bold)),
+              child: Text(
+                'Bank Name',
+                style: _textStyle('Bank Name', 18, FontWeight.bold),
+              ),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Share', style: _textStyle('Share', 18, FontWeight.bold)),
+              child: Text(
+                'Status',
+                style: _textStyle('Status', 18, FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Share',
+                style: _textStyle('Share', 18, FontWeight.bold),
+              ),
             ),
           ],
         ),
@@ -229,8 +281,17 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
           final title = account['title'] ?? '';
           final number = account['number'] ?? '';
           final bankName = account['bank_name'] ?? '';
+          final status = account['status'] ?? 'Active';
+
+          // Row background based on status
+          final Color rowColor = status == 'Active'
+              ? Colors
+                    .green
+                    .shade100 // light green
+              : Colors.red.shade100; // light red
 
           return TableRow(
+            decoration: BoxDecoration(color: rowColor),
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -245,16 +306,27 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
                 child: Text(bankName, style: _textStyle(bankName, 18)),
               ),
               Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  status,
+                  style: _textStyle(status, 18, FontWeight.bold).copyWith(
+                    color: status == 'Active' ? Colors.green : Colors.red,
+                  ),
+                ),
+              ),
+              Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: IconButton(
                   icon: const Icon(Icons.share, size: 30, color: Colors.green),
                   onPressed: () {
-                    final message = '''
+                    final message =
+                        '''
 📋 *Bank Account Details*
 
 🏦 *Title:* $title
 🔢 *Number:* $number
 🏛️ *Bank:* $bankName
+🟢 *Status:* $status
 ''';
                     Share.share(message);
                   },

@@ -8,7 +8,8 @@ class CustomerController extends GetxController {
   final contactController = TextEditingController();
   final addressController = TextEditingController();
 
-  var accounts = <Map<String, TextEditingController>>[].obs;
+  // var accounts = <Map<String, TextEditingController>>[].obs;
+var accounts = <Map<String, dynamic>>[].obs;
 
   int? customerId;
 
@@ -18,34 +19,66 @@ class CustomerController extends GetxController {
     addBankAccount(); // Always have at least one entry
   }
 
-  void setCustomerData(CustomerItemModel customer) async {
-    customerId = customer.id;
-    nameController.text = customer.name;
-    contactController.text = customer.contactNumber;
-    addressController.text = customer.adrress;
+  // void setCustomerData(CustomerItemModel customer) async {
+  //   customerId = customer.id;
+  //   nameController.text = customer.name;
+  //   contactController.text = customer.contactNumber;
+  //   addressController.text = customer.adrress;
 
-    accounts.clear();
+  //   accounts.clear();
 
-    List<BankAccount> existingAccounts =
-        await DBHelper.getBankAccountsForCustomer(customer.id!);
-    for (var acc in existingAccounts) {
-      accounts.add({
-        'accountTitle': TextEditingController(text: acc.title),
-        'accountNumber': TextEditingController(text: acc.number),
-        'bankName': TextEditingController(text: acc.bankName),
-      });
-    }
+  //   List<BankAccount> existingAccounts =
+  //       await DBHelper.getBankAccountsForCustomer(customer.id!);
+  //   for (var acc in existingAccounts) {
+  //     accounts.add({
+  //       'accountTitle': TextEditingController(text: acc.title),
+  //       'accountNumber': TextEditingController(text: acc.number),
+  //       'bankName': TextEditingController(text: acc.bankName),
+  //     });
+  //   }
 
-    if (accounts.isEmpty) addBankAccount();
-  }
+  //   if (accounts.isEmpty) addBankAccount();
+  // }
 
-  void addBankAccount() {
+  // void addBankAccount() {
+  //   accounts.add({
+  //     'accountTitle': TextEditingController(),
+  //     'accountNumber': TextEditingController(),
+  //     'bankName': TextEditingController(),
+  //   });
+  // }
+void setCustomerData(CustomerItemModel customer) async {
+  customerId = customer.id;
+  nameController.text = customer.name;
+  contactController.text = customer.contactNumber;
+  addressController.text = customer.adrress;
+
+  accounts.clear();
+
+  List<BankAccount> existingAccounts =
+      await DBHelper.getBankAccountsForCustomer(customer.id!);
+  for (var acc in existingAccounts) {
     accounts.add({
-      'accountTitle': TextEditingController(),
-      'accountNumber': TextEditingController(),
-      'bankName': TextEditingController(),
+      'accountTitle': TextEditingController(text: acc.title),
+      'accountNumber': TextEditingController(text: acc.number),
+      'bankName': TextEditingController(text: acc.bankName),
+      'status': acc.status ?? 'Active', // 👈 status from DB
+      'id': acc.id, // 👈 keep id for updating later
     });
   }
+
+  if (accounts.isEmpty) addBankAccount();
+}
+
+void addBankAccount() {
+  accounts.add({
+    'accountTitle': TextEditingController(),
+    'accountNumber': TextEditingController(),
+    'bankName': TextEditingController(),
+    'status': 'Active', // plain string
+  });
+}
+
 
   void removeBankAccount(int index) {
     accounts[index]['accountTitle']?.dispose();
@@ -73,7 +106,29 @@ class CustomerController extends GetxController {
 }
 
 
+// Future<bool> updateCustomer(int id) async {
+//   final updatedCustomer = CustomerItemModel(
+//     id: id,
+//     name: nameController.text,
+//     contactNumber: contactController.text,
+//     adrress: addressController.text,
+//   );
+
+//   await DBHelper.updateCustomer(updatedCustomer);
+//   await DBHelper.deleteBankAccountsByCustomerId(id);
+
+//   for (var account in accounts) {
+//     final bankAccount = BankAccount(
+//       title: account['accountTitle']!.text,
+//       number: account['accountNumber']!.text,
+//       bankName: account['bankName']!.text,
+//     );
+//     await DBHelper.insertBankAccount(bankAccount, id);
+//   }
+//   return true; // optional return if needed
+// }
 Future<bool> updateCustomer(int id) async {
+  // Update customer info
   final updatedCustomer = CustomerItemModel(
     id: id,
     name: nameController.text,
@@ -82,17 +137,22 @@ Future<bool> updateCustomer(int id) async {
   );
 
   await DBHelper.updateCustomer(updatedCustomer);
+
+  // Delete old accounts (to refresh)
   await DBHelper.deleteBankAccountsByCustomerId(id);
 
+  // Insert updated accounts with status
   for (var account in accounts) {
     final bankAccount = BankAccount(
       title: account['accountTitle']!.text,
       number: account['accountNumber']!.text,
       bankName: account['bankName']!.text,
+      status: account['status'] ?? 'Active', // 👈 Include status
     );
     await DBHelper.insertBankAccount(bankAccount, id);
   }
-  return true; // optional return if needed
+
+  return true;
 }
 
   @override

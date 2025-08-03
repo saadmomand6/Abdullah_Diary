@@ -3,12 +3,14 @@ class BankAccount {
   String title;
   String number;
   String bankName;
+  String status; // Active or Inactive
 
   BankAccount({
     this.id,
     required this.title,
     required this.number,
     required this.bankName,
+    this.status = 'Active',
   });
 
   Map<String, dynamic> toMap(int customerId) {
@@ -18,6 +20,7 @@ class BankAccount {
       'title': title,
       'number': number,
       'bank_name': bankName,
+      'status': status,
     };
   }
 
@@ -27,6 +30,7 @@ class BankAccount {
       title: map['title'],
       number: map['number'],
       bankName: map['bank_name'],
+      status: map['status'] ?? 'Active',
     );
   }
 }
