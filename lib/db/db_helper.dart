@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/customer_card_models.dart';
+import 'package:abdullah_diary/db/db_helper.dart';
 
 class DBHelper {
   static Database? _db;
@@ -164,10 +165,25 @@ static Future<void> updateCustomer(CustomerItemModel customer) async {
 }
 
   static Future<void> deleteCustomer(int id) async {
-    final db = await database();
-    await db.delete('customers', where: 'id = ?', whereArgs: [id]);
-    await db.delete('bank_accounts', where: 'customer_id = ?', whereArgs: [id]);
-  }
+  final db = await database();
+
+  await db.transaction((txn) async {
+    // Delete related bank accounts first
+    await txn.delete(
+      'bank_accounts',
+      where: 'customer_id = ?',
+      whereArgs: [id],
+    );
+
+    // Then delete the customer
+    await txn.delete(
+      'customers',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  });
+}
+
 
   // static Future<void> insertBankAccount(BankAccount account, int customerId) async {
   //   final db = await database();
@@ -214,6 +230,7 @@ static Future<void> updateBankAccountStatus(int id, String status) async {
     await db.delete('bank_accounts', where: 'customer_id = ?', whereArgs: [customerId]);
   }
   
+ 
 // a function to fetch a specific customer
   static Future<CustomerItemModel?> getCustomerById(int customerId) async {
   final db = await database();

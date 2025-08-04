@@ -145,48 +145,91 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      onPressed: () async {
-                        if (customer != null) {
-                          final updated = await Get.to(
-                            () => EditCustomerScreen(
-                              id: customer!.id!,
-                              name: customer!.name,
-                              contact: customer!.contactNumber,
-                              address: customer!.adrress,
-                            ),
-                          );
-                          if (updated == true) {
-                            await fetchCustomerData();
-                            await fetchBankAccounts();
-                          }
-                        }
-                      },
-                      child: Text(
-                        "Edit Details (ترمیم کریں)",
-                        style: _textStyle(
-                          "Edit Details (ترمیم کریں)",
-                          20,
-                          FontWeight.bold,
-                        ).copyWith(color: Colors.white),
-                      ),
-                    ),
-                  ),
+  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+  child: Column(
+    children: [
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.black,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+          ),
+          onPressed: () async {
+            if (customer != null) {
+              final updated = await Get.to(
+                () => EditCustomerScreen(
+                  id: customer!.id!,
+                  name: customer!.name,
+                  contact: customer!.contactNumber,
+                  address: customer!.adrress,
                 ),
+              );
+              if (updated == true) {
+                await fetchCustomerData();
+                await fetchBankAccounts();
+              }
+            }
+          },
+          child: Text(
+            "Edit Details (ترمیم کریں)",
+            style: _textStyle(
+              "Edit Details (ترمیم کریں)",
+              20,
+              FontWeight.bold,
+            ).copyWith(color: Colors.white),
+          ),
+        ),
+      ),
+      const SizedBox(height: 10),
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+          ),
+          onPressed: () async {
+            final confirm = await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text("Confirm Delete"),
+                content: Text("Are you sure you want to delete this customer?"),
+                actions: [
+                  TextButton(
+                    child: Text("Cancel"),
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    child: Text("Delete"),
+                    onPressed: () => Navigator.of(context).pop(true),
+                  ),
+                ],
+              ),
+            );
+
+            if (confirm == true && customer != null) {
+              await DBHelper.deleteCustomer(customer!.id!);
+              controller.fetchCustomers();
+              Get.back();
+            }
+          },
+          child: Text(
+            "Delete Customer (حذف کریں)",
+            style: _textStyle("Delete Customer (حذف کریں)", 20, FontWeight.bold)
+                .copyWith(color: Colors.white),
+          ),
+        ),
+      ),
+    ],
+  ),
+),
+
               ],
             ),
-    );
-  }
+     );
+ }
 
   Widget _buildInfoItem(String label, String value) {
     return Column(

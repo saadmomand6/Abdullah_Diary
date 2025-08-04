@@ -27,7 +27,7 @@ class CustomerCard extends StatelessWidget {
     bool isUrdu = _isUrdu(name);
 
     return InkWell(
-       onTap: () async {
+      onTap: () async {
         await Get.to(() => CustomerInfoScreen(id: id));
       },
       child: Padding(
@@ -50,50 +50,37 @@ class CustomerCard extends StatelessWidget {
             crossAxisAlignment:
                 isUrdu ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment:
-                    isUrdu ? MainAxisAlignment.start : MainAxisAlignment.end,
-                children: [
-                  if (isUrdu)
-                    const Icon(Icons.remove_red_eye, color: Colors.black),
-                  if (isUrdu) const SizedBox(width: 8),
-
-                  Expanded(
-  child: Text(
-    name,
-    textAlign: isUrdu ? TextAlign.right : TextAlign.left,
-    style: TextStyle(
-      color: Colors.black,
-      fontSize: 26, // 👈 Set your desired font size manually here
-      fontFamily: isUrdu ? 'NooriNastaliq' : null, // 👈 Optional: apply Urdu font
-    ),
-    overflow: TextOverflow.ellipsis,
-    maxLines: 1,
-  ),
-),
-
-                  if (!isUrdu) const SizedBox(width: 8),
-                  if (!isUrdu)
-                    const Icon(Icons.remove_red_eye, color: Colors.black),
-                ],
-              ),
-              const SizedBox(height: 5),
+              // Name Row
               Text(
-                contact ?? '',
+                isUrdu ? 'نام: $name' : 'Name: $name',
                 textAlign: isUrdu ? TextAlign.right : TextAlign.left,
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: MediaQuery.of(context).size.height * 0.03,
-                  fontFamily: isUrdu ? 'NooriNastaliq' : null, // 👈 Optional: apply Urdu font
+                  fontSize: 26,
+                  fontFamily: isUrdu ? 'NooriNastaliq' : null,
                 ),
               ),
+              const SizedBox(height: 5),
+
+              // Contact Row
               Text(
-                address ?? '',
+                isUrdu ? 'رابطہ: ${contact ?? ''}' : 'Contact: ${contact ?? ''}',
                 textAlign: isUrdu ? TextAlign.right : TextAlign.left,
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: MediaQuery.of(context).size.height * 0.03,
-                  fontFamily: isUrdu ? 'NooriNastaliq' : null, // 👈 Optional: apply Urdu font
+                  fontSize: MediaQuery.of(context).size.height * 0.025,
+                  fontFamily: isUrdu ? 'NooriNastaliq' : null,
+                ),
+              ),
+
+              // Address Row
+              Text(
+                isUrdu ? 'پتہ: ${address ?? ''}' : 'Address: ${address ?? ''}',
+                textAlign: isUrdu ? TextAlign.right : TextAlign.left,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: MediaQuery.of(context).size.height * 0.025,
+                  fontFamily: isUrdu ? 'NooriNastaliq' : null,
                 ),
               ),
             ],

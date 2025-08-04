@@ -2,6 +2,7 @@ import 'package:abdullah_diary/controllers/add_customer_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../models/customer_card_models.dart';
+import 'package:abdullah_diary/db/db_helper.dart';
 
 class EditCustomerScreen extends StatefulWidget {
   final int id;
@@ -29,7 +30,6 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
   void initState() {
     super.initState();
 
-    // Set customer data properly
     controller.setCustomerData(
       CustomerItemModel(
         id: widget.id,
@@ -52,6 +52,29 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
   TextDirection _getDirection(String text) {
     final urduRegex = RegExp(r'[\u0600-\u06FF]');
     return urduRegex.hasMatch(text) ? TextDirection.rtl : TextDirection.ltr;
+  }
+
+  void _confirmDelete(int index) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Delete Account"),
+        content: const Text("Are you sure you want to delete this account?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              controller.removeBankAccount(index);
+              Navigator.of(ctx).pop();
+            },
+            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -89,10 +112,10 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                       fontSize: 24,
                       fontFamily:
                           _getDirection(controller.nameController.text) ==
-                              TextDirection.rtl
-                          ? 'JameelNooriNastaleeq'
-                          : null,
-                      fontWeight: FontWeight.bold
+                                  TextDirection.rtl
+                              ? 'JameelNooriNastaleeq'
+                              : null,
+                      fontWeight: FontWeight.bold,
                     ),
                     decoration: _inputDecoration(
                       "Customer Name (کسٹمر کا نام)",
@@ -113,10 +136,10 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                       fontSize: 24,
                       fontFamily:
                           _getDirection(controller.contactController.text) ==
-                              TextDirection.rtl
-                          ? 'JameelNooriNastaleeq'
-                          : null,
-                      fontWeight: FontWeight.bold
+                                  TextDirection.rtl
+                              ? 'JameelNooriNastaleeq'
+                              : null,
+                      fontWeight: FontWeight.bold,
                     ),
                     decoration: _inputDecoration("Contact Number (رابطہ نمبر)"),
                     validator: (value) =>
@@ -135,10 +158,10 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                       fontSize: 24,
                       fontFamily:
                           _getDirection(controller.addressController.text) ==
-                              TextDirection.rtl
-                          ? 'JameelNooriNastaleeq'
-                          : null,
-                          fontWeight: FontWeight.bold
+                                  TextDirection.rtl
+                              ? 'JameelNooriNastaleeq'
+                              : null,
+                      fontWeight: FontWeight.bold,
                     ),
                     decoration: _inputDecoration("Address (پتہ)"),
                     validator: (value) =>
@@ -157,139 +180,142 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                     int index = entry.key;
                     var account = entry.value;
 
-                    return Column(
+                    return Stack(
                       children: [
-                        TextFormField(
-                          controller: account['accountTitle'],
-                          textAlign: TextAlign.center,
-                          textDirection: _getDirection(
-                            account['accountTitle']!.text,
-                          ),
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontFamily:
-                                _getDirection(account['accountTitle']!.text) ==
-                                    TextDirection.rtl
-                                ? 'JameelNooriNastaleeq'
-                                : null,
-                                fontWeight: FontWeight.bold
-                          ),
-                          decoration: _inputDecoration(
-                            "Account Title #${index + 1} (اکاؤنٹ کا نام)",
-                          ),
-                          validator: (value) =>
-                              value!.isEmpty ? "Enter account title" : null,
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: account['accountNumber'],
-                          textAlign: TextAlign.center,
-                          textDirection: _getDirection(
-                            account['accountNumber']!.text,
-                          ),
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontFamily:
-                                _getDirection(account['accountNumber']!.text) ==
-                                    TextDirection.rtl
-                                ? 'JameelNooriNastaleeq'
-                                : null,
-                                fontWeight: FontWeight.bold
-                          ),
-                          decoration: _inputDecoration(
-                            "Account Number #${index + 1} (اکاؤنٹ نمبر)",
-                          ),
-                          keyboardType: TextInputType.number,
-                          validator: (value) =>
-                              value!.isEmpty ? "Enter account number" : null,
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: account['bankName'],
-                          textAlign: TextAlign.center,
-                          textDirection: _getDirection(
-                            account['bankName']!.text,
-                          ),
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontFamily:
-                                _getDirection(account['bankName']!.text) ==
-                                    TextDirection.rtl
-                                ? 'JameelNooriNastaleeq'
-                                : null,
-                                fontWeight: FontWeight.bold
-                          ),
-                          decoration: _inputDecoration(
-                            "Bank Name #${index + 1} (بینک کا نام)",
-                          ),
-                          validator: (value) =>
-                              value!.isEmpty ? "Enter bank name" : null,
-                        ),
-                        const SizedBox(height: 10),
-
-                        // 🔹 New Radio Buttons for Status
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            const Text(
-                              "Status",
-                              style: TextStyle(fontSize: 18),
-                            ),
-                            Row(
-                              children: [
-                                Radio<String>(
-                                  value: 'Active',
-                                  groupValue: account['status'],
-                                  activeColor: Colors.yellow,
-                                  onChanged: (val) {
-                                    setState(() {
-                                      account['status'] = val!;
-                                    });
-                                  },
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                controller: account['accountTitle'],
+                                textAlign: TextAlign.center,
+                                textDirection: _getDirection(
+                                  account['accountTitle']!.text,
                                 ),
-                                const Text(
-                                  'Active',
-                                  style: TextStyle(fontSize: 18),
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontFamily: _getDirection(
+                                              account['accountTitle']!.text) ==
+                                          TextDirection.rtl
+                                      ? 'JameelNooriNastaleeq'
+                                      : null,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Radio<String>(
-                                  value: 'Inactive',
-                                  groupValue: account['status'],
-                                  activeColor: Colors.red,
-                                  onChanged: (val) {
-                                    setState(() {
-                                      account['status'] = val!;
-                                    });
-                                  },
+                                decoration: _inputDecoration(
+                                  "Account Title #${index + 1} (اکاؤنٹ کا نام)",
                                 ),
-                                const Text(
-                                  'Inactive',
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        if (controller.accounts.length > 1)
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton.icon(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              label: const Text(
-                                "Remove (حذف کریں)",
-                                style: TextStyle(color: Colors.red),
+                                validator: (value) => value!.isEmpty
+                                    ? "Enter account title"
+                                    : null,
                               ),
-                              onPressed: () =>
-                                  controller.removeBankAccount(index),
-                            ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                controller: account['accountNumber'],
+                                textAlign: TextAlign.center,
+                                textDirection: _getDirection(
+                                  account['accountNumber']!.text,
+                                ),
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontFamily: _getDirection(
+                                              account['accountNumber']!.text) ==
+                                          TextDirection.rtl
+                                      ? 'JameelNooriNastaleeq'
+                                      : null,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                decoration: _inputDecoration(
+                                  "Account Number #${index + 1} (اکاؤنٹ نمبر)",
+                                ),
+                                validator: (value) => value!.isEmpty
+                                    ? "Enter account number"
+                                    : null,
+                              ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                controller: account['bankName'],
+                                textAlign: TextAlign.center,
+                                textDirection: _getDirection(
+                                  account['bankName']!.text,
+                                ),
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontFamily: _getDirection(
+                                              account['bankName']!.text) ==
+                                          TextDirection.rtl
+                                      ? 'JameelNooriNastaleeq'
+                                      : null,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                decoration: _inputDecoration(
+                                  "Bank Name #${index + 1} (بینک کا نام)",
+                                ),
+                                validator: (value) =>
+                                    value!.isEmpty ? "Enter bank name" : null,
+                              ),
+                              const SizedBox(height: 10),
+
+                              // Status Radio Buttons
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  const Text(
+                                    "Status",
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Radio<String>(
+                                        value: 'Active',
+                                        groupValue: account['status'],
+                                        activeColor: Colors.yellow,
+                                        onChanged: (val) {
+                                          setState(() {
+                                            account['status'] = val!;
+                                          });
+                                        },
+                                      ),
+                                      const Text(
+                                        'Active',
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Radio<String>(
+                                        value: 'Inactive',
+                                        groupValue: account['status'],
+                                        activeColor: Colors.red,
+                                        onChanged: (val) {
+                                          setState(() {
+                                            account['status'] = val!;
+                                          });
+                                        },
+                                      ),
+                                      const Text(
+                                        'Inactive',
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                            ],
                           ),
-                        const SizedBox(height: 20),
+                        ),
+
+                        // Top-right delete button with confirmation
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _confirmDelete(index),
+                          ),
+                        ),
                       ],
                     );
                   }),
@@ -323,7 +349,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                     onTap: () async {
                       if (_formKey.currentState!.validate()) {
                         await controller.updateCustomer(widget.id);
-                        Get.back(result: true); // ✅ Send result
+                        Get.back(result: true);
                       }
                     },
                     child: Container(
